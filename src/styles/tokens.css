@@ -1,0 +1,53 @@
+:root {
+  /* Cores */
+  --color-bg: #0b0f2a;
+  --color-bg-deep: #060818;
+  --color-surface: #161c46;
+  --color-surface-raised: #1f2762;
+  --color-border: #2f3a86;
+  --color-text: #f4f6ff;
+  --color-text-muted: #b9c0ea;
+  --color-accent: #ffd23f; /* seleção */
+  --color-accent-ink: #1a1400;
+  --color-cyan: #3ee6ff;
+  --color-magenta: #ff4fa3;
+  --color-green: #4cff8f;
+  --color-danger: #ff5c5c;
+  --color-player1: #3ee6ff;
+  --color-player2: #ff4fa3;
+  --color-disabled: #6a7099;
+
+  /* Tipografia — fontes do sistema, sem CDN */
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'DejaVu Sans', sans-serif;
+  --font-display: ui-monospace, 'DejaVu Sans Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo, monospace;
+  --text-xs: 0.8rem;
+  --text-sm: 0.95rem;
+  --text-md: 1.1rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.8rem;
+  --text-2xl: 2.4rem;
+
+  /* Espaçamento */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --radius-sm: 0.4rem;
+  --radius-md: 0.8rem;
+  --radius-lg: 1.2rem;
+
+  --header-height: 4.2rem;
+  --footer-height: 3.2rem;
+
+  --focus-ring: 0 0 0 0.3rem var(--color-accent), 0 0 1.6rem rgb(255 210 63 / 45%);
+  --transition-fast: 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+  }
+}
