@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "ti",
+      "title": "Tecnologia da Informação",
+      "description": "Lógica, programação, redes e tecnologia.",
+      "icon": "code"
+    },
+    {
+      "id": "mecanica",
+      "title": "Mecânica",
+      "description": "Desafios de máquinas, componentes e manutenção.",
+      "icon": "settings"
+    },
+    {
+      "id": "eletrica",
+      "title": "Elétrica",
+      "description": "Circuitos, componentes e instalações.",
+      "icon": "zap"
+    },
+    {
+      "id": "logistica",
+      "title": "Logística",
+      "description": "Estoques, rotas e operações.",
+      "icon": "package"
+    },
+    {
+      "id": "administrativo",
+      "title": "Auxiliar Administrativo",
+      "description": "Organização, processos e gestão.",
+      "icon": "clipboard-list"
+    },
+    {
+      "id": "costura",
+      "title": "Costura",
+      "description": "Tecidos, modelagem e produção.",
+      "icon": "scissors"
+    },
+    {
+      "id": "desafios-senai",
+      "title": "Desafios SENAI",
+      "description": "Desafios que misturam diferentes áreas.",
+      "icon": "trophy"
+    },
+    {
+      "id": "alunos",
+      "title": "Jogos dos Alunos",
+      "description": "Criações desenvolvidas pelos estudantes.",
+      "icon": "graduation-cap"
+    }
+  ],
+  "games": [
+    {
+      "id": "duelo-de-reflexos",
+      "title": "Duelo de Reflexos",
+      "description": "Dois jogadores disputam quem reage primeiro ao sinal.",
+      "categoryId": "ti",
+      "entry": "/games/duelo-de-reflexos/index.html",
+      "cover": "/images/games/duelo-de-reflexos.svg",
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "mode": "competitive",
+      "authors": ["SENAI Lab"],
+      "status": "published",
+      "controls": "Cada jogador usa seu botão de ação 1."
+    }
+  ]
+}

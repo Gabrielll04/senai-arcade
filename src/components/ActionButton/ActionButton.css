@@ -1,0 +1,35 @@
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-width: 12rem;
+  min-height: 3.2rem;
+  padding: var(--space-2) var(--space-5);
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--text-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.action-button svg {
+  font-size: 1.4em;
+}
+
+.action-button[data-selected='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  box-shadow: var(--focus-ring);
+  transform: scale(1.04);
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}

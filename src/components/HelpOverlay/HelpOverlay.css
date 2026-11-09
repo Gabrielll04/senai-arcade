@@ -1,0 +1,67 @@
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: rgb(3 4 14 / 86%);
+}
+
+.help-overlay__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(62rem, 100%);
+  max-height: 100%;
+  padding: var(--space-5) var(--space-6);
+  border: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  box-shadow: 0 0 3rem rgb(255 210 63 / 25%);
+}
+
+.help-overlay__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+}
+
+.help-overlay__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-md);
+}
+
+.help-overlay__table th,
+.help-overlay__table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.help-overlay__table thead th {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+}
+
+.help-overlay__table td .keycap + .keycap {
+  margin-left: var(--space-1);
+}
+
+.help-overlay__p1 {
+  color: var(--color-player1);
+}
+
+.help-overlay__p2 {
+  color: var(--color-player2);
+}
+
+.help-overlay__note {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
