@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duelo de Reflexos — SENAI Arcade</title>
+    <link rel="stylesheet" href="./game.css" />
+  </head>
+  <body>
+    <main class="duel" data-phase="intro">
+      <section class="player player--1" aria-label="Jogador 1">
+        <h2 class="player__name">Jogador 1</h2>
+        <p class="player__score" data-score="1">0</p>
+        <p class="player__key">Ação 1 · tecla J</p>
+      </section>
+
+      <section class="center" aria-live="assertive">
+        <h1 class="title">Duelo de Reflexos</h1>
+        <p class="round" data-round></p>
+        <p class="signal" data-signal></p>
+        <p class="message" data-message></p>
+        <div class="rules" data-rules>
+          <p>Espere o sinal <strong>AGORA!</strong> e aperte sua <strong>Ação 1</strong> antes do adversário.</p>
+          <p>Apertou antes do sinal? <strong>Queimou a largada</strong> e o ponto vai para o outro jogador.</p>
+          <p>Quem fizer <strong>3 pontos</strong> primeiro vence.</p>
+        </div>
+        <p class="prompt" data-prompt></p>
+      </section>
+
+      <section class="player player--2" aria-label="Jogador 2">
+        <h2 class="player__name">Jogador 2</h2>
+        <p class="player__score" data-score="2">0</p>
+        <p class="player__key">Ação 1 · tecla 1 (num)</p>
+      </section>
+    </main>
+    <p class="standalone" data-standalone hidden>
+      Este jogo deve ser aberto pelo SENAI Arcade. Os controles chegam pelo launcher.
+    </p>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>

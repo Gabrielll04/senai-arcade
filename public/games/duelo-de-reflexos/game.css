@@ -1,0 +1,184 @@
+:root {
+  --bg: #07091c;
+  --text: #f4f6ff;
+  --muted: #b9c0ea;
+  --p1: #3ee6ff;
+  --p2: #ff4fa3;
+  --go: #4cff8f;
+  --wait: #ffd23f;
+  --danger: #ff5c5c;
+  font-size: clamp(12px, min(1.25vw, 2.2vh), 28px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'DejaVu Sans', sans-serif;
+  user-select: none;
+  cursor: none;
+}
+
+p,
+h1,
+h2 {
+  margin: 0;
+}
+
+.duel {
+  display: grid;
+  grid-template-columns: 1fr 2.2fr 1fr;
+  height: 100%;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-inline: 0.4rem solid transparent;
+  transition: background 120ms ease-out;
+}
+
+.player--1 {
+  color: var(--p1);
+  background: rgb(62 230 255 / 8%);
+}
+
+.player--2 {
+  color: var(--p2);
+  background: rgb(255 79 163 / 8%);
+}
+
+.player__name {
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player__score {
+  font-family: ui-monospace, 'DejaVu Sans Mono', monospace;
+  font-size: 8rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.player__key {
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.player[data-highlight='win'] {
+  background: currentColor;
+}
+
+.player[data-highlight='win'] > * {
+  color: var(--bg);
+}
+
+.player[data-highlight='foul'] {
+  border-color: var(--danger);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.title {
+  font-family: ui-monospace, 'DejaVu Sans Mono', monospace;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.round {
+  color: var(--muted);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.signal {
+  min-height: 1.2em;
+  font-family: ui-monospace, 'DejaVu Sans Mono', monospace;
+  font-size: 6rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.message {
+  min-height: 1.4em;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 38rem;
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+.rules strong {
+  color: var(--text);
+}
+
+.prompt {
+  min-height: 1.3em;
+  color: var(--wait);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/* Fases: cores e textos mudam de forma inequívoca (não depende de som). */
+.duel[data-phase='countdown'] .signal,
+.duel[data-phase='waiting'] .signal {
+  color: var(--wait);
+}
+
+.duel[data-phase='go'] .center {
+  background: var(--go);
+  color: #002611;
+}
+
+.duel[data-phase='go'] .signal {
+  font-size: 9rem;
+}
+
+.duel:not([data-phase='intro']) .rules {
+  display: none;
+}
+
+.standalone {
+  position: fixed;
+  inset: auto 0 0;
+  padding: 1rem;
+  background: var(--danger);
+  color: #000;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player {
+    transition: none;
+  }
+}

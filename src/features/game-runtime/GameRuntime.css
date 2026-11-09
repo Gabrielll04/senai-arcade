@@ -1,0 +1,99 @@
+.runtime {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) var(--footer-height);
+  height: 100%;
+  background: #000;
+}
+
+.runtime__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+.runtime__frame[data-hidden='true'] {
+  visibility: hidden;
+}
+
+.runtime__overlay {
+  position: absolute;
+  inset: 0 0 var(--footer-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--color-bg);
+  text-align: center;
+}
+
+.runtime__title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+}
+
+.runtime__text {
+  max-width: 44rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.runtime__icon {
+  color: var(--color-danger);
+  font-size: 5rem;
+}
+
+.runtime__spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 0.5rem solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: runtime-spin 900ms linear infinite;
+}
+
+@keyframes runtime-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.runtime__actions {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.runtime__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-6);
+  border-top: 3px solid var(--color-border);
+  background: var(--color-bg-deep);
+}
+
+.runtime__game-title {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime__score {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 800;
+}
+
+.runtime__score-p1 {
+  color: var(--color-player1);
+}
+
+.runtime__score-p2 {
+  color: var(--color-player2);
+}
