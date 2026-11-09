@@ -228,7 +228,9 @@ export function GameRuntime({
 
       {status.kind === 'error' ? (
         <div className="runtime__overlay" role="alert" data-testid="game-error">
-          <Icon name="alert" className="runtime__icon" />
+          <span className="runtime__icon">
+            <Icon name="alert" />
+          </span>
           <h2 className="runtime__title">Não foi possível abrir {game.title}</h2>
           <p className="runtime__text">{ERROR_TEXT[status.reason]} Você pode voltar ao menu ou tentar novamente.</p>
           <div className="runtime__actions">
@@ -245,7 +247,9 @@ export function GameRuntime({
       ) : null}
 
       <div className="runtime__bar">
-        <span className="runtime__game-title">{game.title}</span>
+        <span className="runtime__game-title">
+          <Icon name="play" /> {game.title}
+        </span>
         {score ? (
           <span className="runtime__score" data-testid="game-score">
             Placar: <span className="runtime__score-p1">J1 {score.scores.find((s) => s.player === 1)?.value ?? 0}</span>

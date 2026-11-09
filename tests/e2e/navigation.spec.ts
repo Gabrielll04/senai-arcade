@@ -14,7 +14,9 @@ const CATEGORIES = [
 
 test('1. abre a aplicação e mostra as categorias', async ({ page }) => {
   await openHome(page);
-  for (const title of CATEGORIES) await expect(page.getByText(title, { exact: true })).toBeVisible();
+  const carousel = page.getByTestId('category-carousel');
+  for (const title of CATEGORIES) await expect(carousel.getByRole('button', { name: new RegExp(`^${title}:`) })).toBeVisible();
+  await expect(page.getByTestId('home-hero')).toContainText('Tecnologia da Informação');
   await expect(page.getByTestId('category-ti').getByTestId('category-count')).toHaveText('1 jogo');
   await expect(page.getByText('Em breve', { exact: true })).toHaveCount(7);
   // Sem rolagem vertical em 720p.
@@ -28,24 +30,28 @@ test('2. navega pelas categorias com WASD', async ({ page }) => {
   await page.keyboard.press('KeyD');
   await page.keyboard.press('KeyD');
   await expect(selected(page)).toHaveAttribute('data-testid', 'category-eletrica');
+  await expect(page.getByTestId('home-hero')).toContainText('Elétrica');
   await page.keyboard.press('KeyS');
-  await expect(selected(page)).toHaveAttribute('data-testid', 'category-desafios-senai');
-  await page.keyboard.press('KeyA');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'open-diagnostics');
   await page.keyboard.press('KeyW');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'category-eletrica');
+  await page.keyboard.press('KeyA');
   await expect(selected(page)).toHaveAttribute('data-testid', 'category-mecanica');
 });
 
 test('3. navega pelas categorias com as setas', async ({ page }) => {
   await openHome(page);
-  await page.keyboard.press('ArrowRight');
-  await page.keyboard.press('ArrowRight');
-  await page.keyboard.press('ArrowRight');
-  await expect(selected(page)).toHaveAttribute('data-testid', 'category-logistica');
-  await page.keyboard.press('ArrowDown');
+  for (let i = 0; i < 7; i += 1) await page.keyboard.press('ArrowRight');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'category-alunos');
+  await expect(selected(page)).toBeInViewport();
+  await page.keyboard.press('ArrowRight'); // não dá a volta
   await expect(selected(page)).toHaveAttribute('data-testid', 'category-alunos');
   await page.keyboard.press('ArrowLeft');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'category-desafios-senai');
+  await page.keyboard.press('ArrowDown');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'open-help');
   await page.keyboard.press('ArrowUp');
-  await expect(selected(page)).toHaveAttribute('data-testid', 'category-eletrica');
+  await expect(selected(page)).toHaveAttribute('data-testid', 'category-desafios-senai');
   // As setas não rolam a página.
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
@@ -55,6 +61,7 @@ test('4 e 8. abre a categoria de TI e volta às categorias', async ({ page }) =>
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Tecnologia da Informação' })).toBeVisible();
   await expect(page.getByTestId('game-duelo-de-reflexos')).toContainText('2 jogadores');
+  await expect(page.getByTestId('game-details')).toContainText('SENAI Lab');
   await expect(page.getByText('Voltar', { exact: true })).toBeVisible();
   await page.keyboard.press('KeyK');
   await expect(page.getByTestId('category-ti')).toBeVisible();
@@ -68,7 +75,6 @@ test('4 e 8. abre a categoria de TI e volta às categorias', async ({ page }) =>
 
 test('9. abre e usa a tela de diagnóstico', async ({ page }) => {
   await openHome(page);
-  await page.keyboard.press('KeyS');
   await page.keyboard.press('KeyS');
   await expect(selected(page)).toHaveAttribute('data-testid', 'open-diagnostics');
   await page.keyboard.press('Enter');

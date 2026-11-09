@@ -1,0 +1,76 @@
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: var(--topbar-height);
+  padding: 0 var(--page-x);
+}
+
+.topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.topbar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.topbar__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.65rem;
+  background: linear-gradient(135deg, var(--accent), #ffffff40);
+  color: #0b0d18;
+  font-size: 1.3rem;
+  transition: background var(--transition-slow);
+}
+
+.topbar__logo-sub {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.topbar__crumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+  white-space: nowrap;
+}
+
+.topbar__crumb span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.topbar__clock {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}

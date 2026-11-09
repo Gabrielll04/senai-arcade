@@ -2,12 +2,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--space-2) var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
-  color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
@@ -17,12 +16,13 @@
   gap: var(--space-2);
 }
 
-.hints__controls {
-  display: flex;
-  gap: var(--space-1);
-}
-
 .hints__label {
   color: var(--color-text);
   font-weight: 600;
+}
+
+.hints__keys {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
 }

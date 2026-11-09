@@ -89,8 +89,8 @@ export function DiagnosticsScreen({ onBack, inputEnabled }: DiagnosticsScreenPro
   }, inputEnabled);
 
   const hints: Hint[] = [
-    { id: 'exit', controls: [...keysFor(1, 'back'), 'Select'], label: 'Sair' },
-    { id: 'hold', controls: [...keysFor(1, 'action2'), 'Ação 2'], label: 'Segure 1,5 s para sair' },
+    { id: 'exit', glyph: { label: 'SELECT', variant: 'neutral' }, keys: keysFor(1, 'back'), label: 'Sair' },
+    { id: 'hold', glyph: { label: 'B', variant: 'b' }, keys: keysFor(1, 'action2'), label: 'Segure 1,5 s para sair' },
   ];
 
   const mappedButtons = new Set(Object.keys(DEFAULT_GAMEPAD_MAPPING.buttons).map(Number));

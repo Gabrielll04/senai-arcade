@@ -19,10 +19,11 @@ body,
 }
 
 body {
-  background: radial-gradient(ellipse at top, var(--color-surface) 0%, var(--color-bg) 55%, var(--color-bg-deep) 100%);
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-md);
+  font-weight: 400;
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
   user-select: none;
@@ -45,6 +46,10 @@ p {
   margin: 0;
 }
 
+.app {
+  height: 100%;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -57,22 +62,75 @@ p {
   border: 0;
 }
 
-/* Rótulo de tecla/botão, usado em dicas e ajuda. */
+/* Rótulo de tecla, usado em dicas, ajuda e diagnóstico. */
 .keycap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.7em;
+  min-width: 1.6em;
   padding: 0.05em 0.45em;
-  border: 2px solid var(--color-text-muted);
-  border-bottom-width: 4px;
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-deep);
-  font-family: var(--font-display);
-  font-size: 0.85em;
+  border: 1px solid var(--color-border-strong);
+  border-bottom-width: 3px;
+  border-radius: 0.4em;
+  background: rgb(255 255 255 / 6%);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.82em;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   white-space: nowrap;
+}
+
+/* Glyph circular de botão (estilo controle de console). */
+.glyph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0 0.35rem;
+  border-radius: var(--radius-pill);
+  background: var(--glyph-neutral);
+  color: #0b0d18;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.glyph svg {
+  font-size: 1.1rem;
+}
+
+.glyph--a {
+  background: var(--glyph-a);
+}
+
+.glyph--b {
+  background: var(--glyph-b);
+}
+
+.glyph--start {
+  background: var(--glyph-start);
+}
+
+.glyph--wide {
+  padding: 0 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -82,9 +140,6 @@ p {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-.app {
-  height: 100%;
 }

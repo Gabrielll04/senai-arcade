@@ -1,31 +1,42 @@
 :root {
-  /* Cores */
-  --color-bg: #0b0f2a;
-  --color-bg-deep: #060818;
-  --color-surface: #161c46;
-  --color-surface-raised: #1f2762;
-  --color-border: #2f3a86;
-  --color-text: #f4f6ff;
-  --color-text-muted: #b9c0ea;
-  --color-accent: #ffd23f; /* seleção */
-  --color-accent-ink: #1a1400;
-  --color-cyan: #3ee6ff;
-  --color-magenta: #ff4fa3;
-  --color-green: #4cff8f;
-  --color-danger: #ff5c5c;
+  /* Base escura, estilo "console". Cada tela define --accent conforme a área selecionada. */
+  --color-bg: #070912;
+  --color-bg-elevated: #0e1222;
+  --color-surface: rgb(255 255 255 / 6%);
+  --color-surface-strong: rgb(255 255 255 / 10%);
+  --color-surface-solid: #141a2e;
+  --color-border: rgb(255 255 255 / 10%);
+  --color-border-strong: rgb(255 255 255 / 22%);
+  --color-text: #f5f7ff;
+  --color-text-muted: #a3abc8;
+  --color-text-dim: #6c7493;
+  --color-white: #ffffff;
+  --color-green: #34e39a;
+  --color-danger: #ff5d6c;
   --color-player1: #3ee6ff;
-  --color-player2: #ff4fa3;
-  --color-disabled: #6a7099;
+  --color-player2: #ff5fb0;
 
-  /* Tipografia — fontes do sistema, sem CDN */
-  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'DejaVu Sans', sans-serif;
-  --font-display: ui-monospace, 'DejaVu Sans Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo, monospace;
-  --text-xs: 0.8rem;
-  --text-sm: 0.95rem;
-  --text-md: 1.1rem;
-  --text-lg: 1.35rem;
-  --text-xl: 1.8rem;
-  --text-2xl: 2.4rem;
+  /* Glyphs dos botões */
+  --glyph-a: #34e39a;
+  --glyph-b: #ff5d6c;
+  --glyph-start: #ffd25a;
+  --glyph-neutral: #c9cfe6;
+
+  /* Cor de destaque padrão (sobrescrita por tela) */
+  --accent: #7c8cff;
+  --accent-soft: rgb(124 140 255 / 22%);
+
+  /* Tipografia — fonte local (Outfit, OFL) empacotada no build, sem CDN */
+  --font-body: 'Outfit Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-display: 'Outfit Variable', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'DejaVu Sans Mono', 'Cascadia Mono', Menlo, monospace;
+  --text-xs: 0.78rem;
+  --text-sm: 0.92rem;
+  --text-md: 1.05rem;
+  --text-lg: 1.3rem;
+  --text-xl: 1.7rem;
+  --text-2xl: 2.3rem;
+  --text-hero: 3.3rem;
 
   /* Espaçamento */
   --space-1: 0.25rem;
@@ -34,20 +45,27 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
+  --space-7: 3rem;
 
-  --radius-sm: 0.4rem;
-  --radius-md: 0.8rem;
-  --radius-lg: 1.2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.4rem;
+  --radius-pill: 999px;
 
-  --header-height: 4.2rem;
-  --footer-height: 3.2rem;
+  --topbar-height: 4rem;
+  --hintbar-height: 3.4rem;
+  --page-x: 2.5rem;
 
-  --focus-ring: 0 0 0 0.3rem var(--color-accent), 0 0 1.6rem rgb(255 210 63 / 45%);
-  --transition-fast: 120ms ease-out;
+  --shadow-card: 0 0.6rem 1.6rem rgb(0 0 0 / 35%);
+  --ring-selected: 0 0 0 0.22rem var(--color-white), 0 0 0 0.5rem var(--accent), 0 0.8rem 2.4rem var(--accent-soft);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-fast: 160ms var(--ease-out);
+  --transition-slow: 420ms var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root {
     --transition-fast: 0ms;
+    --transition-slow: 0ms;
   }
 }

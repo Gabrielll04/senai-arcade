@@ -2,32 +2,33 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
-  min-width: 12rem;
-  min-height: 3.2rem;
-  padding: var(--space-2) var(--space-5);
-  border: 3px solid var(--color-border);
-  border-radius: var(--radius-md);
+  gap: var(--space-2);
+  min-height: 2.6rem;
+  padding: 0.35rem 1.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
   background: var(--color-surface);
-  font-size: var(--text-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
   font-weight: 700;
   cursor: pointer;
   transition:
     transform var(--transition-fast),
     box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .action-button svg {
-  font-size: 1.4em;
+  font-size: 1.3em;
 }
 
 .action-button[data-selected='true'] {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
-  box-shadow: var(--focus-ring);
-  transform: scale(1.04);
+  border-color: transparent;
+  background: var(--color-white);
+  color: #0b0d18;
+  box-shadow: 0 0 0 0.2rem var(--accent), 0 0.5rem 1.6rem var(--accent-soft);
+  transform: scale(1.05);
 }
 
 .action-button:active {

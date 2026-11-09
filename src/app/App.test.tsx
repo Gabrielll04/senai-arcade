@@ -15,17 +15,31 @@ describe('App — navegação por teclado', () => {
     expect(selected()).toBe(ti);
   });
 
-  it('move a seleção com WASD (jogador 1) e setas (jogador 2)', async () => {
+  it('move a seleção no carrossel com WASD (jogador 1) e setas (jogador 2)', async () => {
     renderApp();
     await screen.findByTestId('category-ti');
     act(() => tap('KeyD'));
     expect(selected()).toBe(screen.getByTestId('category-mecanica'));
-    act(() => tap('ArrowDown'));
-    expect(selected()).toBe(screen.getByTestId('category-costura'));
+    act(() => tap('ArrowRight'));
+    expect(selected()).toBe(screen.getByTestId('category-eletrica'));
+    expect(screen.getByTestId('home-hero')).toHaveTextContent('Elétrica');
+    expect(screen.getByTestId('home-hero')).toHaveTextContent('Em breve');
     act(() => tap('KeyA'));
-    expect(selected()).toBe(screen.getByTestId('category-administrativo'));
-    act(() => tap('ArrowUp'));
-    expect(selected()).toBe(screen.getByTestId('category-ti'));
+    expect(selected()).toBe(screen.getByTestId('category-mecanica'));
+  });
+
+  it('desce para os atalhos e, ao subir, volta para a última área', async () => {
+    renderApp();
+    await screen.findByTestId('category-ti');
+    act(() => tap('KeyD'));
+    act(() => tap('KeyD'));
+    act(() => tap('KeyS'));
+    expect(selected()).toBe(screen.getByTestId('open-diagnostics'));
+    expect(screen.getByTestId('home-hero')).toHaveTextContent('Elétrica');
+    act(() => tap('ArrowRight'));
+    expect(selected()).toBe(screen.getByTestId('open-help'));
+    act(() => tap('KeyW'));
+    expect(selected()).toBe(screen.getByTestId('category-eletrica'));
   });
 
   it('abre a categoria TI, mostra o jogo e volta às categorias', async () => {
@@ -35,7 +49,14 @@ describe('App — navegação por teclado', () => {
     const card = await screen.findByTestId('game-duelo-de-reflexos');
     expect(card).toHaveTextContent('2 jogadores');
     expect(card).toHaveTextContent('Competitivo');
-    expect(card).toHaveTextContent('SENAI Lab');
+    const details = screen.getByTestId('game-details');
+    expect(details).toHaveTextContent('Duelo de Reflexos');
+    expect(details).toHaveTextContent('SENAI Lab');
+    expect(details).toHaveTextContent('Dois jogadores disputam');
+    expect(selected()).toBe(card);
+    act(() => tap('KeyS'));
+    expect(selected()).toBe(screen.getByTestId('back-to-categories'));
+    act(() => tap('KeyW'));
     expect(selected()).toBe(card);
     act(() => tap('KeyK'));
     expect(await screen.findByTestId('category-ti')).toBeInTheDocument();
@@ -70,7 +91,6 @@ describe('App — navegação por teclado', () => {
   it('abre a tela de diagnóstico pelo menu e mostra a última tecla', async () => {
     renderApp();
     await screen.findByTestId('category-ti');
-    act(() => tap('KeyS'));
     act(() => tap('KeyS'));
     expect(selected()).toBe(screen.getByTestId('open-diagnostics'));
     act(() => tap('Enter'));

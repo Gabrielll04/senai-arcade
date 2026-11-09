@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { InputProvider } from './input/InputProvider';
+import '@fontsource-variable/outfit/wght.css';
 import './styles/tokens.css';
 import './styles/global.css';
 

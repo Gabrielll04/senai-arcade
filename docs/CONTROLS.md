@@ -28,7 +28,12 @@ ações normalizadas (`up`, `down`, `left`, `right`, `confirm`, `cancel`, `start
 | Durante o jogo | Tudo é encaminhado ao jogo com o número do jogador | **Voltar** encerra o jogo e retorna ao menu |
 | Diagnóstico | Todas as entradas só são exibidas | **Voltar**, ou segurar Ação 2 por 1,5 s |
 
-No menu, as direções dos **dois** jogadores movem a seleção.
+No menu, as direções dos **dois** jogadores movem a seleção:
+
+- **Tela inicial:** esquerda/direita percorrem o carrossel de áreas; baixo vai para os
+  atalhos (Diagnóstico, Ajuda); cima volta para a última área selecionada.
+- **Tela da área:** cima/baixo percorrem a lista de jogos; o último item é "Voltar às
+  categorias".
 
 ### Por que `event.code`?
 

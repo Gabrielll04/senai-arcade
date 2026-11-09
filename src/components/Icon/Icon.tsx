@@ -91,6 +91,19 @@ const ICONS = {
       <line x1="12" y1="17" x2="12.01" y2="17" />
     </>
   ),
+  dpad: (
+    <>
+      <path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z" />
+      <circle cx="12" cy="12" r="1.2" />
+    </>
+  ),
+  play: <polygon points="7 4 20 12 7 20 7 4" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15 14" />
+    </>
+  ),
   users: (
     <>
       <circle cx="9" cy="8" r="3.5" />
