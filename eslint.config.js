@@ -24,6 +24,11 @@ export default tseslint.config(
     },
   },
   {
+    // Em testes, asserções não nulas deixam as verificações mais legíveis.
+    files: ['**/*.test.{ts,tsx}', 'tests/e2e/**/*.ts'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
+  {
     // Jogos estáticos em public/ são JavaScript puro executado no navegador.
     files: ['public/**/*.js'],
     extends: [js.configs.recommended],

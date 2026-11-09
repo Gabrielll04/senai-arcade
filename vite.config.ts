@@ -6,6 +6,9 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react()],
   base: '/',
+  // Sem fallback de SPA: o launcher não tem rotas por URL, e um jogo ausente
+  // deve responder 404 (igual ao Nginx em produção) em vez de devolver index.html.
+  appType: 'mpa',
   build: {
     target: 'es2022',
     sourcemap: false,

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useRef } from 'react';
+import { createContext, useContext, useLayoutEffect, useRef } from 'react';
 import type { GamepadAdapter } from './gamepadAdapter';
 import type { InputManager } from './InputManager';
 import type { KeyboardAdapter } from './keyboardAdapter';
@@ -28,7 +28,9 @@ export function useArcadeInput(handler: (event: ArcadeInputEvent) => void, enabl
   useLayoutEffect(() => {
     handlerRef.current = handler;
   });
-  useEffect(() => {
+  // useLayoutEffect: a tela já escuta entradas no momento em que aparece,
+  // sem perder uma tecla pressionada logo após a transição.
+  useLayoutEffect(() => {
     if (!enabled) return undefined;
     return manager.subscribe((event) => handlerRef.current(event));
   }, [manager, enabled]);
