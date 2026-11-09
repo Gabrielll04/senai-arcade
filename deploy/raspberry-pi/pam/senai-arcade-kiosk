@@ -1,0 +1,6 @@
+# PAM para a sessão do quiosque (Cage), baseado no exemplo de systemd do projeto Cage.
+# Instalado em /etc/pam.d/senai-arcade-kiosk pelo scripts/install.sh.
+auth           required        pam_unix.so nullok
+account        required        pam_unix.so
+session        required        pam_unix.so
+session        required        pam_systemd.so

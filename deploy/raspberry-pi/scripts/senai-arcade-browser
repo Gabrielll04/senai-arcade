@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Inicia o Chromium em modo quiosque apontando para o SENAI Arcade local.
+# Instalado em /usr/local/bin/senai-arcade-browser pelo install.sh e executado pelo Cage.
+set -euo pipefail
+
+URL="${SENAI_ARCADE_URL:-http://127.0.0.1/}"
+PROFILE_DIR="${HOME:-/home/arcade}/.cache/senai-arcade-chromium"
+
+# O nome do pacote/binário varia entre versões do Raspberry Pi OS.
+BROWSER=""
+for candidate in chromium chromium-browser; do
+  if command -v "$candidate" >/dev/null 2>&1; then
+    BROWSER="$(command -v "$candidate")"
+    break
+  fi
+done
+if [[ -z "$BROWSER" ]]; then
+  echo "senai-arcade-browser: Chromium não encontrado (procurado: chromium, chromium-browser)." >&2
+  exit 1
+fi
+
+# Perfil descartável: nada de sessão restaurada, histórico ou dados entre reinícios.
+rm -rf "$PROFILE_DIR"
+mkdir -p "$PROFILE_DIR"
+
+exec "$BROWSER" \
+  --kiosk \
+  --ozone-platform=wayland \
+  --user-data-dir="$PROFILE_DIR" \
+  --no-first-run \
+  --noerrdialogs \
+  --disable-infobars \
+  --disable-session-crashed-bubble \
+  --disable-features=Translate,TranslateUI \
+  --disable-pinch \
+  --overscroll-history-navigation=0 \
+  --password-store=basic \
+  --autoplay-policy=no-user-gesture-required \
+  --check-for-update-interval=31536000 \
+  "$URL"
