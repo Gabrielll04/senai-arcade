@@ -63,7 +63,11 @@ um commit fixado, aplica as adaptações ao protocolo, roda os testes do jogo e 
 **apenas** a build (`dist/`, com `base: './'`) para `public/games/<id>/`. Adicione
 `public/games/<id>` aos `ignores` do `eslint.config.js` (é código gerado).
 
-Exemplo completo: [`integrations/stardust-runner/`](../integrations/stardust-runner/README.md).
+Exemplos:
+- [`integrations/stardust-runner/`](../integrations/stardust-runner/README.md): jogo
+  pronto, com um patch pequeno aplicado no build;
+- [`integrations/react-native-quest/`](../integrations/react-native-quest/README.md):
+  versão fliperama nova que importa o **conteúdo** de outro repositório no build.
 
 ## Regras do manifesto
 

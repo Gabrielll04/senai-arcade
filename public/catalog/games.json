@@ -84,6 +84,23 @@
       ],
       "status": "draft",
       "controls": "Direcional troca de pista; cima ou A pula; baixo ou B desliza."
+    },
+    {
+      "id": "react-native-quest",
+      "title": "React Native Quest",
+      "description": "Responda sobre os componentes do React Native com demos vivas: sozinho contra o Guardião ou em dupla.",
+      "categoryId": "ti",
+      "entry": "/games/react-native-quest/index.html",
+      "cover": "/images/games/react-native-quest-capa.webp",
+      "hero": "/images/games/react-native-quest-destaque.webp",
+      "minPlayers": 1,
+      "maxPlayers": 2,
+      "mode": "competitive",
+      "authors": [
+        "Gabrielll04"
+      ],
+      "status": "draft",
+      "controls": "Direcional escolhe a alternativa e A confirma. Em dupla, cada lado tem seu cursor."
     }
   ]
 }

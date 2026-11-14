@@ -77,6 +77,14 @@ describe('GameRuntime', () => {
     expect(onExit).toHaveBeenCalledTimes(1);
   });
 
+  it('jogo de até 2 jogadores jogado sozinho (1 placar) mostra só a pontuação', () => {
+    const flex = { ...game, id: 'react-native-quest', minPlayers: 1, maxPlayers: 2 };
+    const { fromGame } = setup(1000, flex);
+    fromGame(msg('ready', { gameId: 'react-native-quest' }));
+    fromGame(msg('score', { gameId: 'react-native-quest', scores: [{ player: 1, value: 742 }] }));
+    expect(screen.getByTestId('game-score')).toHaveTextContent('Pontuação: 742');
+  });
+
   it('em jogo de 1 jogador, mostra só a pontuação', () => {
     const solo = { ...game, id: 'stardust-runner', mode: 'solo' as const, minPlayers: 1, maxPlayers: 1 };
     const { fromGame } = setup(1000, solo);

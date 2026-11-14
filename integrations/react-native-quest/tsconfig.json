@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "types": [
+      "vite/client",
+      "vitest/globals"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@quest/*": [
+        "./.quest/*"
+      ],
+      "@shared/*": [
+        "./.quest/shared/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "vite.config.ts",
+    ".quest/client/src/types/react-native.d.ts"
+  ]
+}

@@ -68,6 +68,22 @@ describe('STARDUST RUNNER', () => {
   });
 });
 
+describe('React Native Quest (versão fliperama)', () => {
+  it('está registrado em TI para 1–2 jogadores e continua em draft até ser aprovado', () => {
+    const result = parseCatalog(manifest);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.catalog.games.find((g) => g.id === 'react-native-quest')).toMatchObject({
+      categoryId: 'ti',
+      minPlayers: 1,
+      maxPlayers: 2,
+      status: 'draft',
+      entry: '/games/react-native-quest/index.html',
+    });
+    expect(findLaunchableGame(result.catalog, 'react-native-quest')).toBeUndefined();
+  });
+});
+
 describe('validação do manifesto', () => {
   it('rejeita versão desconhecida', () => {
     expect(errorsOf({ ...clone(), version: 2 }).length).toBeGreaterThan(0);

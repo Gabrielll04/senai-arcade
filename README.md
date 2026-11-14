@@ -97,6 +97,7 @@ Detalhes, encoders e como alterar o mapeamento: [`docs/CONTROLS.md`](docs/CONTRO
 | [`docs/FIELD-TEST.md`](docs/FIELD-TEST.md) | Roteiro do piloto com pessoas e checklist físico |
 | [`deploy/raspberry-pi/README.md`](deploy/raspberry-pi/README.md) | Instalação em quiosque, atualização e rollback |
 | [`integrations/stardust-runner/README.md`](integrations/stardust-runner/README.md) | Integração do STARDUST RUNNER (jogo externo): build, controles, áudio e atualização |
+| [`integrations/react-native-quest/README.md`](integrations/react-native-quest/README.md) | Versão fliperama do React Native Quest: como foi feita, como jogar e como atualizar |
 
 ## Adicionar um jogo (resumo)
 
@@ -119,6 +120,7 @@ para serviços externos. A pontuação das partidas só é exibida, não é salv
 |---|---|
 | Launcher, navegação, ajuda, diagnóstico, runtime de jogos | ✅ implementado e coberto por testes |
 | Duelo de Reflexos (2 jogadores) | ✅ implementado; partida completa coberta por E2E |
+| React Native Quest — versão fliperama (1–2 jogadores) | ✅ em `draft`; menus, solo, dupla, `ready`/`exit`/`score` e offline cobertos por E2E; teste com alunos e no Pi pendentes |
 | STARDUST RUNNER (1 jogador) | ✅ integrado em `draft`; controles, `ready`/`exit`/`score` e áudio cobertos por E2E; desempenho no Pi 3/Pi 4 pendente |
 | Teclado | ✅ testado automaticamente (Chromium) |
 | Encoder USB em modo teclado | ☐ teste físico pendente (usa o mesmo caminho do teclado) |

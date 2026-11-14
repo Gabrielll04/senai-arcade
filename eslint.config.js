@@ -14,6 +14,11 @@ export default tseslint.config(
       'node_modules',
       // Build gerada por integrations/stardust-runner/build.sh (não editar à mão).
       'public/games/stardust-runner',
+      // Build gerada por integrations/react-native-quest/build.sh.
+      'public/games/react-native-quest',
+      // Clones dos repositórios de jogos usados nos builds de integração.
+      'integrations/*/.quest',
+      'integrations/*/dist',
     ],
   },
   {

@@ -1,0 +1,6 @@
+# Clone do React Native Quest no commit fixado (criado pelo build.sh)
+.quest/
+# Imagens e sons copiados do Quest pelo build.sh
+public/
+node_modules/
+dist/
