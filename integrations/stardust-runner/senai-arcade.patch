@@ -1,0 +1,566 @@
+diff --git a/package.json b/package.json
+index 9c3f9d5..7262a09 100644
+--- a/package.json
++++ b/package.json
+@@ -12,7 +12,8 @@
+     "test:padroes": "node src/game/patterns.test.js",
+     "test:hitbox": "node src/game/hitbox.test.js",
+     "test:ritmo": "node src/game/pacing.test.js",
+-    "test": "npm run test:padroes && npm run test:hitbox && npm run test:ritmo"
++    "test:arcade": "node src/core/arcade.test.js",
++    "test": "npm run test:padroes && npm run test:hitbox && npm run test:ritmo && npm run test:arcade"
+   },
+   "dependencies": {
+     "three": "^0.170.0"
+diff --git a/src/config.js b/src/config.js
+index cb03d1b..47b187d 100644
+--- a/src/config.js
++++ b/src/config.js
+@@ -19,7 +19,9 @@ export const NOME_JOGO = 'STARDUST RUNNER';
+  * NAO no servidor de desenvolvimento do Vite (5173). Apontar para a 5173 da
+  * 404 em /api/score, porque o Vite nao conhece essa rota.
+  */
+-export const LEADERBOARD_URL = 'auto';
++// SENAI Arcade: placar em rede desligado nesta build (sem coleta de apelidos e
++// sem chamadas de rede). O launcher recebe a pontuacao final por postMessage.
++export const LEADERBOARD_URL = '';
+ 
+ /** Tempo maximo (ms) que uma chamada ao placar pode demorar antes de desistir. */
+ export const LEADERBOARD_TIMEOUT = 3000;
+diff --git a/src/core/arcade.js b/src/core/arcade.js
+new file mode 100644
+index 0000000..944f947
+--- /dev/null
++++ b/src/core/arcade.js
+@@ -0,0 +1,113 @@
++/* ==========================================================================
++   SENAI ARCADE - ponte com o launcher do fliperama.
++
++   Quando o jogo roda DENTRO do SENAI Arcade (num iframe), quem le teclado,
++   encoder e gamepad e o launcher. Ele manda as entradas ja normalizadas por
++   window.postMessage (protocolo "senai-arcade" versao 1) e o jogo NAO pode
++   registrar listeners proprios de teclado/gamepad - senao cada tecla valeria
++   duas vezes.
++
++   Fora do launcher (aberto direto no navegador, server.js, pendrive) nada
++   aqui e ativado e o jogo segue exatamente como antes.
++
++   Protocolo: docs/ADDING-GAMES.md do repositorio senai-arcade.
++   ========================================================================== */
++
++export const PROTOCOLO = 'senai-arcade';
++export const VERSAO = 1;
++export const GAME_ID = 'stardust-runner';
++
++/** Maior pontuacao aceita pelo launcher na mensagem "score". */
++const PONTUACAO_MAXIMA = 1000000;
++
++function estaEmIframe() {
++  try {
++    return window.parent !== window;
++  } catch {
++    return true;
++  }
++}
++
++/** True quando o jogo foi aberto pelo SENAI Arcade. */
++export const modoArcade = typeof window !== 'undefined' && estaEmIframe();
++
++/**
++ * Acoes do launcher -> acoes do jogo.
++ * 'sair' e especial: pede para encerrar e voltar ao menu do fliperama.
++ */
++const MAPA_ARCADE = {
++  left: 'esquerda',
++  right: 'direita',
++  up: 'pular',
++  down: 'deslizar',
++  action2: 'deslizar',
++  confirm: 'confirmar',
++  action1: 'confirmar',
++  start: 'confirmar',
++  back: 'sair'
++};
++
++export function acaoDoLauncher(acaoLauncher) {
++  return Object.prototype.hasOwnProperty.call(MAPA_ARCADE, acaoLauncher)
++    ? MAPA_ARCADE[acaoLauncher]
++    : null;
++}
++
++/**
++ * "Cima" e "confirmar" fazem pulo OU inicio, conforme a fase:
++ * - nos menus (attract, fim), cima tambem comeca a partida;
++ * - durante a corrida, confirmar (botao A / Enter) tambem pula.
++ */
++export function traduzirPorFase(acao, fase) {
++  if (acao === 'pular' && (fase === 'attract' || fase === 'fim')) return 'confirmar';
++  if (acao === 'confirmar' && fase === 'jogando') return 'pular';
++  return acao;
++}
++
++/** Valida uma mensagem "input" do launcher. Devolve null se nao for valida. */
++export function lerEntrada(dados) {
++  if (!dados || typeof dados !== 'object') return null;
++  if (dados.protocol !== PROTOCOLO || dados.version !== VERSAO || dados.type !== 'input') return null;
++  const p = dados.payload;
++  if (!p || typeof p !== 'object') return null;
++  if (p.player !== 1 && p.player !== 2) return null;
++  if (p.phase !== 'pressed' && p.phase !== 'released') return null;
++  if (typeof p.action !== 'string') return null;
++  return { jogador: p.player, acao: p.action, fase: p.phase };
++}
++
++/** Envia uma mensagem ao launcher (somente para a janela pai, mesma origem). */
++export function enviarAoLauncher(type, payload) {
++  if (!modoArcade) return;
++  window.parent.postMessage({ protocol: PROTOCOLO, version: VERSAO, type, payload }, window.location.origin);
++}
++
++export function avisarPronto() {
++  enviarAoLauncher('ready', { gameId: GAME_ID });
++}
++
++export function avisarSaida(reason = 'user-request') {
++  enviarAoLauncher('exit', { reason });
++}
++
++export function enviarPontuacaoFinal(pontos) {
++  const valor = Math.max(0, Math.min(PONTUACAO_MAXIMA, Math.round(Number(pontos) || 0)));
++  enviarAoLauncher('score', { gameId: GAME_ID, scores: [{ player: 1, value: valor }] });
++}
++
++/**
++ * Escuta o launcher e entrega as acoes ja traduzidas.
++ * So reage a "pressed": o jogo trata cada acao como um toque.
++ * Devolve uma funcao que remove o listener.
++ */
++export function ouvirLauncher(aoAgir) {
++  const aoReceber = (ev) => {
++    if (ev.origin !== window.location.origin || ev.source !== window.parent) return;
++    const entrada = lerEntrada(ev.data);
++    if (!entrada || entrada.fase !== 'pressed') return;
++    const acao = acaoDoLauncher(entrada.acao);
++    if (acao) aoAgir(acao);
++  };
++  window.addEventListener('message', aoReceber);
++  return () => window.removeEventListener('message', aoReceber);
++}
+diff --git a/src/core/arcade.test.js b/src/core/arcade.test.js
+new file mode 100644
+index 0000000..11a77f9
+--- /dev/null
++++ b/src/core/arcade.test.js
+@@ -0,0 +1,44 @@
++/* Testes da ponte com o SENAI Arcade (node src/core/arcade.test.js). */
++import { acaoDoLauncher, traduzirPorFase, lerEntrada } from './arcade.js';
++
++let falhas = 0;
++function confere(nome, obtido, esperado) {
++  const ok = JSON.stringify(obtido) === JSON.stringify(esperado);
++  if (!ok) falhas++;
++  console.log((ok ? '  ok   ' : '  FALHOU ') + nome + (ok ? '' : ` (obtido ${JSON.stringify(obtido)}, esperado ${JSON.stringify(esperado)})`));
++}
++
++console.log('\nponte SENAI Arcade');
++confere('left -> esquerda', acaoDoLauncher('left'), 'esquerda');
++confere('right -> direita', acaoDoLauncher('right'), 'direita');
++confere('up -> pular', acaoDoLauncher('up'), 'pular');
++confere('down -> deslizar', acaoDoLauncher('down'), 'deslizar');
++confere('action2 -> deslizar', acaoDoLauncher('action2'), 'deslizar');
++confere('confirm -> confirmar', acaoDoLauncher('confirm'), 'confirmar');
++confere('action1 -> confirmar', acaoDoLauncher('action1'), 'confirmar');
++confere('start -> confirmar', acaoDoLauncher('start'), 'confirmar');
++confere('back -> sair', acaoDoLauncher('back'), 'sair');
++confere('acao desconhecida -> null', acaoDoLauncher('help'), null);
++confere('nome herdado de Object -> null', acaoDoLauncher('toString'), null);
++
++confere('cima no attract comeca', traduzirPorFase('pular', 'attract'), 'confirmar');
++confere('cima no fim recomeca', traduzirPorFase('pular', 'fim'), 'confirmar');
++confere('cima correndo pula', traduzirPorFase('pular', 'jogando'), 'pular');
++confere('confirmar correndo pula', traduzirPorFase('confirmar', 'jogando'), 'pular');
++confere('confirmar no attract comeca', traduzirPorFase('confirmar', 'attract'), 'confirmar');
++confere('confirmar na pausa continua', traduzirPorFase('confirmar', 'pausa'), 'confirmar');
++
++const valida = { protocol: 'senai-arcade', version: 1, type: 'input', payload: { player: 1, action: 'up', phase: 'pressed' } };
++confere('mensagem valida', lerEntrada(valida), { jogador: 1, acao: 'up', fase: 'pressed' });
++confere('protocolo errado', lerEntrada({ ...valida, protocol: 'outro' }), null);
++confere('versao errada', lerEntrada({ ...valida, version: 2 }), null);
++confere('tipo errado', lerEntrada({ ...valida, type: 'ready' }), null);
++confere('jogador invalido', lerEntrada({ ...valida, payload: { ...valida.payload, player: 3 } }), null);
++confere('fase invalida', lerEntrada({ ...valida, payload: { ...valida.payload, phase: 'x' } }), null);
++confere('nulo', lerEntrada(null), null);
++
++if (falhas) {
++  console.log(`\n${falhas} FALHA(S)`);
++  process.exit(1);
++}
++console.log('\nTUDO CERTO');
+diff --git a/src/core/input.js b/src/core/input.js
+index 090bea8..a19d998 100644
+--- a/src/core/input.js
++++ b/src/core/input.js
+@@ -1,8 +1,13 @@
+ /* ==========================================================================
+    INPUT - teclado + toque, traduzidos para ACOES nomeadas.
+    O resto do jogo nunca olha codigo de tecla: so escuta acoes.
++
++   Dentro do SENAI Arcade (modoArcade) nenhum listener de teclado, toque ou
++   mouse e registrado: as acoes chegam do launcher por postMessage.
+    ========================================================================== */
+ 
++import { modoArcade, ouvirLauncher } from './arcade.js';
++
+ const MAPA = {
+   ArrowLeft: 'esquerda',
+   KeyA: 'esquerda',
+@@ -50,85 +55,95 @@ function emitir(acao, origem) {
+   for (const fn of ouvintes) fn(acao, origem);
+ }
+ 
+-/* --------------------------- TECLADO --------------------------- */
+-window.addEventListener('keydown', (ev) => {
+-  if (ev.code === 'F3') ev.preventDefault();
+-  if (capturaTexto) {
+-    // Enter/Escape ainda passam: sao a saida da tela de apelido.
+-    if (ev.code === 'Enter' || ev.code === 'NumpadEnter') { emitir('confirmar', 'teclado'); }
+-    else if (ev.code === 'Escape') { emitir('voltar', 'teclado'); }
+-    else if (ev.code === 'Tab') { ev.preventDefault(); emitir('proximaSugestao', 'teclado'); }
+-    else { ultimoInput = performance.now(); }
+-    return;
++/* ------------------- ENTRADAS PROPRIAS (fora do launcher) ------------------- */
++function registrarEntradasProprias() {
++  /* --------------------------- TECLADO --------------------------- */
++  window.addEventListener('keydown', (ev) => {
++    if (ev.code === 'F3') ev.preventDefault();
++    if (capturaTexto) {
++      // Enter/Escape ainda passam: sao a saida da tela de apelido.
++      if (ev.code === 'Enter' || ev.code === 'NumpadEnter') { emitir('confirmar', 'teclado'); }
++      else if (ev.code === 'Escape') { emitir('voltar', 'teclado'); }
++      else if (ev.code === 'Tab') { ev.preventDefault(); emitir('proximaSugestao', 'teclado'); }
++      else { ultimoInput = performance.now(); }
++      return;
++    }
++    const acao = MAPA[ev.code];
++    if (BLOQUEAR.has(ev.code)) ev.preventDefault();
++    if (!acao) { ultimoInput = performance.now(); return; }
++    if (ev.repeat && (acao === 'pular' || acao === 'confirmar')) return;
++    emitir(acao, 'teclado');
++  }, { passive: false });
++
++  /* --------------------------- TOQUE --------------------------- */
++  const LIMIAR = 26;          // pixels ate virar swipe
++  let toqueX = 0, toqueY = 0, toqueT = 0, toqueValido = false, jaDisparou = false;
++
++  function inicioToque(x, y) {
++    toqueX = x; toqueY = y; toqueT = performance.now();
++    toqueValido = true; jaDisparou = false;
++    ultimoInput = toqueT;
+   }
+-  const acao = MAPA[ev.code];
+-  if (BLOQUEAR.has(ev.code)) ev.preventDefault();
+-  if (!acao) { ultimoInput = performance.now(); return; }
+-  if (ev.repeat && (acao === 'pular' || acao === 'confirmar')) return;
+-  emitir(acao, 'teclado');
+-}, { passive: false });
+-
+-/* --------------------------- TOQUE --------------------------- */
+-const LIMIAR = 26;          // pixels ate virar swipe
+-let toqueX = 0, toqueY = 0, toqueT = 0, toqueValido = false, jaDisparou = false;
+-
+-function inicioToque(x, y) {
+-  toqueX = x; toqueY = y; toqueT = performance.now();
+-  toqueValido = true; jaDisparou = false;
+-  ultimoInput = toqueT;
+-}
+ 
+-function moveToque(x, y) {
+-  if (!toqueValido || jaDisparou) return;
+-  const dx = x - toqueX;
+-  const dy = y - toqueY;
+-  if (Math.abs(dx) < LIMIAR && Math.abs(dy) < LIMIAR) return;
+-  jaDisparou = true;
+-  if (Math.abs(dx) > Math.abs(dy)) emitir(dx > 0 ? 'direita' : 'esquerda', 'toque');
+-  else emitir(dy > 0 ? 'deslizar' : 'pular', 'toque');
+-}
+-
+-function fimToque() {
+-  if (toqueValido && !jaDisparou && performance.now() - toqueT < 450) {
+-    emitir('confirmar', 'toque');
++  function moveToque(x, y) {
++    if (!toqueValido || jaDisparou) return;
++    const dx = x - toqueX;
++    const dy = y - toqueY;
++    if (Math.abs(dx) < LIMIAR && Math.abs(dy) < LIMIAR) return;
++    jaDisparou = true;
++    if (Math.abs(dx) > Math.abs(dy)) emitir(dx > 0 ? 'direita' : 'esquerda', 'toque');
++    else emitir(dy > 0 ? 'deslizar' : 'pular', 'toque');
+   }
+-  toqueValido = false;
+-}
+-
+-window.addEventListener('touchstart', (ev) => {
+-  const t = ev.changedTouches[0];
+-  inicioToque(t.clientX, t.clientY);
+-}, { passive: true });
+ 
+-window.addEventListener('touchmove', (ev) => {
+-  const t = ev.changedTouches[0];
+-  moveToque(t.clientX, t.clientY);
+-}, { passive: true });
++  function fimToque() {
++    if (toqueValido && !jaDisparou && performance.now() - toqueT < 450) {
++      emitir('confirmar', 'toque');
++    }
++    toqueValido = false;
++  }
+ 
+-window.addEventListener('touchend', fimToque, { passive: true });
+-window.addEventListener('touchcancel', () => { toqueValido = false; }, { passive: true });
++  window.addEventListener('touchstart', (ev) => {
++    const t = ev.changedTouches[0];
++    inicioToque(t.clientX, t.clientY);
++  }, { passive: true });
++
++  window.addEventListener('touchmove', (ev) => {
++    const t = ev.changedTouches[0];
++    moveToque(t.clientX, t.clientY);
++  }, { passive: true });
++
++  window.addEventListener('touchend', fimToque, { passive: true });
++  window.addEventListener('touchcancel', () => { toqueValido = false; }, { passive: true });
++
++  // Mouse tambem serve (util para testar e para telas touch que reportam mouse).
++  window.addEventListener('pointerdown', (ev) => {
++    if (ev.pointerType === 'touch') return;
++    if (ev.target && ev.target.tagName === 'INPUT') { ultimoInput = performance.now(); return; }
++    if (ev.target && ev.target.classList && ev.target.classList.contains('sugestao')) {
++      ultimoInput = performance.now();
++      return;
++    }
++    inicioToque(ev.clientX, ev.clientY);
++  });
++  window.addEventListener('pointermove', (ev) => {
++    if (ev.pointerType === 'touch') return;
++    if (ev.buttons === 0) return;
++    moveToque(ev.clientX, ev.clientY);
++  });
++  window.addEventListener('pointerup', (ev) => {
++    if (ev.pointerType === 'touch') return;
++    fimToque();
++  });
++
++  window.addEventListener('contextmenu', (ev) => ev.preventDefault());
++}
+ 
+-// Mouse tambem serve (util para testar e para telas touch que reportam mouse).
+-window.addEventListener('pointerdown', (ev) => {
+-  if (ev.pointerType === 'touch') return;
+-  if (ev.target && ev.target.tagName === 'INPUT') { ultimoInput = performance.now(); return; }
+-  if (ev.target && ev.target.classList && ev.target.classList.contains('sugestao')) {
+-    ultimoInput = performance.now();
+-    return;
+-  }
+-  inicioToque(ev.clientX, ev.clientY);
+-});
+-window.addEventListener('pointermove', (ev) => {
+-  if (ev.pointerType === 'touch') return;
+-  if (ev.buttons === 0) return;
+-  moveToque(ev.clientX, ev.clientY);
+-});
+-window.addEventListener('pointerup', (ev) => {
+-  if (ev.pointerType === 'touch') return;
+-  fimToque();
+-});
+-
+-window.addEventListener('contextmenu', (ev) => ev.preventDefault());
++if (modoArcade) {
++  // O SENAI Arcade e o dono dos controles: as acoes chegam ja normalizadas.
++  ouvirLauncher((acao) => emitir(acao, 'arcade'));
++} else {
++  registrarEntradasProprias();
++}
+ 
+ /* --------------------------- API --------------------------- */
+ export const input = {
+diff --git a/src/main.js b/src/main.js
+index 90e1002..67df959 100644
+--- a/src/main.js
++++ b/src/main.js
+@@ -20,6 +20,9 @@ import { Hud } from './ui/hud.js';
+ import { Telas } from './ui/screens.js';
+ import { enviarPontuacao, buscarTop, placarLigado } from './ui/leaderboard.js';
+ import { ehRotaPlacar, iniciarPlacar } from './placar.js';
++import {
++  modoArcade, traduzirPorFase, avisarPronto, avisarSaida, enviarPontuacaoFinal
++} from './core/arcade.js';
+ 
+ /* Fases da interface (o jogo tem o estado dele, isto aqui e o fluxo de telas) */
+ const FASE = {
+@@ -45,13 +48,32 @@ class Aplicacao {
+     this.ultimoQuadro = 0;
+     this.pausadoPorAba = false;
+     this.tempoChecarSom = 0;
++    this.idQuadro = 0;
++    this.encerrado = false;
++    this.timers = new Set();
++  }
++
++  /** setTimeout rastreado: tudo e cancelado ao sair para o SENAI Arcade. */
++  agendar(fn, ms) {
++    const id = setTimeout(() => {
++      this.timers.delete(id);
++      fn();
++    }, ms);
++    this.timers.add(id);
+   }
+ 
+   /* ------------------------------------------------------------------ */
+   iniciar() {
++    if (modoArcade) this.prepararModoArcade();
++
+     const qualidadeInicial = prefs.get('qualidade');
+     if (!this.renderizador.iniciar(qualidadeInicial)) {
+       this.mostrarErroWebGL();
++      // O launcher precisa do ready para encaminhar o "voltar" ate aqui.
++      if (modoArcade) {
++        input.aoAgir((acao) => { if (acao === 'sair') this.encerrar(); });
++        avisarPronto();
++      }
+       return;
+     }
+ 
+@@ -92,11 +114,46 @@ class Aplicacao {
+ 
+     this.ligarEventosDeJanela();
+ 
+-    if (this.ehTouch()) document.getElementById('toque-guia').classList.remove('oculto');
++    if (!modoArcade && this.ehTouch()) document.getElementById('toque-guia').classList.remove('oculto');
+ 
+     this.entrarAttract();
+     this.ultimoQuadro = performance.now();
+-    requestAnimationFrame((t) => this.quadro(t));
++    this.idQuadro = requestAnimationFrame((t) => this.quadro(t));
++    if (modoArcade) avisarPronto();
++  }
++
++  /* ------------------------------------------------------------------ */
++  /* SENAI Arcade                                                        */
++  /* ------------------------------------------------------------------ */
++  /** Ajusta textos de controle ao fliperama (sem atalhos de teclado do PC). */
++  prepararModoArcade() {
++    document.body.classList.add('modo-arcade');
++    const lista = document.querySelector('.lista-controles');
++    if (lista) {
++      lista.innerHTML =
++        '<li><b>&larr; &rarr;</b><span>TROCAR DE PISTA</span></li>' +
++        '<li><b>&uarr; / A</b><span>PULAR</span></li>' +
++        '<li><b>&darr; / B</b><span>DESLIZAR</span></li>' +
++        '<li><b>VOLTAR</b><span>SAIR DO JOGO</span></li>';
++    }
++  }
++
++  /**
++   * Pedido de saida do launcher: para o loop, cancela timers, silencia o
++   * audio, libera a GPU e responde "exit".
++   */
++  encerrar() {
++    if (this.encerrado) return;
++    this.encerrado = true;
++    cancelAnimationFrame(this.idQuadro);
++    for (const id of this.timers) clearTimeout(id);
++    this.timers.clear();
++    try { audio.suspender(); } catch { /* ignora */ }
++    try {
++      const r = this.renderizador.renderer;
++      if (r) { r.dispose(); r.forceContextLoss(); }
++    } catch { /* ignora */ }
++    avisarSaida('user-request');
+   }
+ 
+   ehTouch() {
+@@ -184,8 +241,10 @@ class Aplicacao {
+     this.renderizador.aoPerderContexto = () => {
+       if (this.fase === FASE.JOGANDO) this.pausar();
+       this.telas.abrirErro(
+-        'A placa de video reiniciou e o desenho foi perdido. Recarregue a pagina (F5) ' +
+-        'para voltar a correr.'
++        modoArcade
++          ? 'A placa de video reiniciou e o desenho foi perdido. Aperte VOLTAR e abra o jogo de novo.'
++          : 'A placa de video reiniciou e o desenho foi perdido. Recarregue a pagina (F5) ' +
++            'para voltar a correr.'
+       );
+       this.fase = FASE.ERRO;
+     };
+@@ -309,9 +368,11 @@ class Aplicacao {
+     this.telas.abrirFim(resumo, ehRecorde);
+ 
+     if (ehRecorde) {
+-      setTimeout(() => this.jogo.mundo.sacudir(0.4), 700);
++      this.agendar(() => this.jogo.mundo.sacudir(0.4), 700);
+     }
+ 
++    if (modoArcade) enviarPontuacaoFinal(resumo.pontos);
++
+     if (placarLigado) {
+       this.telas.statusEnvio('ENVIANDO PONTUACAO...', '');
+       enviarPontuacao({
+@@ -333,7 +394,11 @@ class Aplicacao {
+   /* Entradas                                                            */
+   /* ------------------------------------------------------------------ */
+   tratarAcao(acao, origem) {
+-    if (this.fase === FASE.ERRO) return;
++    if (modoArcade) {
++      if (acao === 'sair') { this.encerrar(); return; }
++      acao = traduzirPorFase(acao, this.fase);
++    }
++    if (this.encerrado || this.fase === FASE.ERRO) return;
+ 
+     // Atalhos globais
+     if (acao === 'telaCheia') { alternarTelaCheia(); return; }
+@@ -351,7 +416,9 @@ class Aplicacao {
+     switch (this.fase) {
+       case FASE.ATTRACT:
+         if (acao === 'confirmar') {
+-          this.entrarNickname();
++          // No fliperama nao ha campo de texto nem coleta de apelido.
++          if (modoArcade) this.entrarContagem();
++          else this.entrarNickname();
+         } else if (this.telas.vitrine) {
+           // Qualquer outra tecla tira a vitrine e traz o menu de volta.
+           this.telas.setVitrine(false);
+@@ -408,7 +475,8 @@ class Aplicacao {
+   /* Loop                                                                */
+   /* ------------------------------------------------------------------ */
+   quadro(agora) {
+-    requestAnimationFrame((t) => this.quadro(t));
++    if (this.encerrado) return;
++    this.idQuadro = requestAnimationFrame((t) => this.quadro(t));
+     if (this.fase === FASE.ERRO) return;
+ 
+     // dt limitado: se a aba ficou parada, nao teleporta o jogo.
+diff --git a/src/ui/screens.js b/src/ui/screens.js
+index f78f80b..fdacc55 100644
+--- a/src/ui/screens.js
++++ b/src/ui/screens.js
+@@ -3,6 +3,7 @@
+    Todas sao overlays de DOM sobre o canvas, no mesmo tema da galaxia.
+    ========================================================================== */
+ 
++import { modoArcade } from '../core/arcade.js';
+ import { NOME_JOGO, SUGESTOES_NICK, RESOLUCOES, PONTOS } from '../config.js';
+ import { prefs } from '../core/storage.js';
+ import { montarLogo } from './logo.js';
+@@ -77,6 +78,12 @@ export class Telas {
+   setVitrine(ativo) {
+     this.vitrine = !!ativo;
+     el('tela-attract').classList.toggle('vitrine', this.vitrine);
++    if (modoArcade) {
++      el('chamada-texto').textContent = this.vitrine
++        ? 'APERTE A!'
++        : 'APERTE A OU ENTER PARA COMECAR';
++      return;
++    }
+     el('chamada-texto').textContent = this.vitrine
+       ? 'APERTE ENTER!'
+       : 'PRESSIONE ENTER PARA COMECAR';

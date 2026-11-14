@@ -211,6 +211,7 @@ export function GameRuntime({
           src={game.entry}
           title={game.title}
           sandbox="allow-scripts allow-same-origin"
+          allow="autoplay"
           tabIndex={-1}
           data-hidden={status.kind !== 'running'}
           onLoad={handleLoad}
@@ -243,7 +244,12 @@ export function GameRuntime({
 
       <div className="runtime__bar">
         <span className="runtime__game-title">{game.title}</span>
-        {score ? (
+        {score && game.maxPlayers === 1 ? (
+          <span className="runtime__score" data-testid="game-score">
+            Pontuação: {(score.scores[0]?.value ?? 0).toLocaleString('pt-BR')}
+          </span>
+        ) : null}
+        {score && game.maxPlayers > 1 ? (
           <span className="runtime__score" data-testid="game-score">
             Placar: <span className="runtime__score-p1">J1 {score.scores.find((s) => s.player === 1)?.value ?? 0}</span>
             {' × '}

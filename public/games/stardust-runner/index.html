@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="description" content="Stardust Runner - endless runner espacial pixelado" />
+<title>STARDUST RUNNER</title>
+  <script type="module" crossorigin src="./assets/index--cJzrWyt.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BThmdOhl.css">
+</head>
+<body>
+  <!-- O palco tem exatamente o tamanho/posicao do canvas escalado.
+       Tudo que e HUD/menu vive aqui dentro, em resolucao nativa. -->
+  <div id="palco">
+    <canvas id="cena"></canvas>
+    <div id="scanlines" aria-hidden="true"></div>
+    <div id="vinheta" aria-hidden="true"></div>
+
+    <!-- ================= HUD ================= -->
+    <div id="hud" class="oculto">
+      <div class="hud-topo">
+        <div class="hud-bloco hud-esq">
+          <div id="hud-score" class="hud-score">0</div>
+          <div id="hud-dist" class="hud-sub">0 M</div>
+        </div>
+        <div class="hud-bloco hud-dir">
+          <div id="hud-mult" class="hud-mult">x1</div>
+          <div id="hud-combo-barra" class="combo-barra"><i></i></div>
+        </div>
+      </div>
+      <div id="hud-powerups" class="hud-powerups"></div>
+      <div id="hud-avisos" class="hud-avisos"></div>
+      <div id="hud-flash" class="hud-flash"></div>
+    </div>
+
+    <!-- ================= ATTRACT ================= -->
+    <section id="tela-attract" class="tela oculto">
+      <div class="attract-escurece"></div>
+      <div class="attract-conteudo">
+        <div class="bloco-marca">
+          <div id="logo-slot"></div>
+          <span class="marca-demo">DEMONSTRACAO AUTOMATICA</span>
+        </div>
+        <p class="tagline">CORRA PELO VAZIO. NAO OLHE PRA TRAS.</p>
+        <div class="attract-colunas">
+          <div class="painel">
+            <h3>CONTROLES</h3>
+            <ul class="lista-controles">
+              <li><b>&larr; &rarr;</b><span>TROCAR DE PISTA</span></li>
+              <li><b>&uarr; / ESPACO</b><span>PULAR</span></li>
+              <li><b>&darr;</b><span>DESLIZAR</span></li>
+              <li><b>P / ESC</b><span>PAUSA</span></li>
+              <li><b>M</b><span>MUDO</span></li>
+              <li><b>C</b><span>CONFIGURACOES</span></li>
+              <li><b>F</b><span>TELA CHEIA</span></li>
+            </ul>
+          </div>
+          <div class="painel">
+            <h3 id="titulo-placar">RECORDE LOCAL</h3>
+            <ol id="lista-placar" class="lista-placar"></ol>
+          </div>
+        </div>
+        <ul class="legenda-obstaculos">
+          <li class="leg-pedra"><i></i><b>PEDRA</b><span>PULE</span></li>
+          <li class="leg-laser"><i></i><b>LASER</b><span>DESLIZE</span></li>
+          <li class="leg-barreira"><i></i><b>BARREIRA</b><span>DESVIE</span></li>
+        </ul>
+        <div class="chamada"><span id="chamada-texto">PRESSIONE ENTER PARA COMECAR</span></div>
+      </div>
+    </section>
+
+    <!-- ================= NICKNAME ================= -->
+    <section id="tela-nick" class="tela oculto">
+      <div class="caixa">
+        <h2 class="caixa-titulo">QUEM VAI CORRER?</h2>
+        <p class="caixa-legenda">ATE 12 CARACTERES</p>
+        <div class="campo-nick">
+          <input id="input-nick" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          <span class="cursor-nick"></span>
+        </div>
+        <div class="sugestoes">
+          <span class="sugestoes-rotulo">SUGESTOES</span>
+          <div id="sugestoes-lista"></div>
+        </div>
+        <div class="caixa-rodape">
+          <span class="tecla">ENTER</span> CONFIRMAR
+          <span class="sep">/</span>
+          <span class="tecla">ESC</span> VOLTAR
+          <span class="sep">/</span>
+          <span class="tecla">TAB</span> OUTRA SUGESTAO
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTAGEM ================= -->
+    <section id="tela-partida" class="tela oculto">
+      <div id="contagem" class="contagem">3</div>
+    </section>
+
+    <!-- ================= PAUSA ================= -->
+    <section id="tela-pausa" class="tela oculto">
+      <div class="caixa">
+        <h2 class="caixa-titulo">PAUSADO</h2>
+        <div class="caixa-rodape">
+          <span class="tecla">P</span> CONTINUAR
+          <span class="sep">/</span>
+          <span class="tecla">C</span> CONFIGURACOES
+          <span class="sep">/</span>
+          <span class="tecla">ESC</span> SAIR
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= GAME OVER ================= -->
+    <section id="tela-fim" class="tela oculto">
+      <div class="caixa caixa-fim">
+        <h2 id="fim-titulo" class="caixa-titulo">FIM DE LINHA</h2>
+        <div id="fim-recorde" class="selo-recorde oculto">NOVO RECORDE</div>
+        <div class="fim-score"><span id="fim-score">0</span></div>
+        <div class="fim-grade">
+          <div><b id="fim-dist">0</b><span>METROS</span></div>
+          <div><b id="fim-poeira">0</b><span>POEIRA</span></div>
+          <div><b id="fim-combo">x1</b><span>MAIOR COMBO</span></div>
+        </div>
+        <div id="fim-envio" class="fim-envio"></div>
+        <div class="caixa-rodape">
+          <span class="tecla">ENTER</span> DE NOVO
+          <span class="sep">/</span>
+          <span class="tecla">ESC</span> MENU
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONFIGURACOES ================= -->
+    <section id="tela-config" class="tela oculto">
+      <div class="caixa">
+        <h2 class="caixa-titulo">CONFIGURACOES</h2>
+        <ul id="lista-config" class="lista-config"></ul>
+        <div class="caixa-rodape">
+          <span class="tecla">&uarr; &darr;</span> NAVEGAR
+          <span class="sep">/</span>
+          <span class="tecla">&larr; &rarr;</span> AJUSTAR
+          <span class="sep">/</span>
+          <span class="tecla">ESC</span> FECHAR
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ERRO WEBGL ================= -->
+    <section id="tela-erro" class="tela oculto">
+      <div class="caixa">
+        <h2 class="caixa-titulo">SEM SINAL</h2>
+        <p id="erro-texto" class="erro-texto"></p>
+      </div>
+    </section>
+
+    <div id="fps" class="fps oculto"></div>
+    <div id="aviso-qualidade" class="aviso-qualidade"></div>
+    <div id="aviso-som" class="aviso-som oculto">SOM BLOQUEADO PELO NAVEGADOR &middot; APERTE UMA TECLA</div>
+    <div id="toque-guia" class="toque-guia oculto">
+      <span>ARRASTE PARA OS LADOS &middot; PARA CIMA PULA &middot; PARA BAIXO DESLIZA</span>
+    </div>
+  </div>
+
+</body>
+</html>

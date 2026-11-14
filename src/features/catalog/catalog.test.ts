@@ -48,6 +48,26 @@ describe('manifesto oficial', () => {
   });
 });
 
+describe('STARDUST RUNNER', () => {
+  it('está registrado em TI, solo, e continua em draft até ser aprovado', () => {
+    const result = parseCatalog(manifest);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const game = result.catalog.games.find((g) => g.id === 'stardust-runner');
+    expect(game).toMatchObject({
+      title: 'STARDUST RUNNER',
+      categoryId: 'ti',
+      mode: 'solo',
+      minPlayers: 1,
+      maxPlayers: 1,
+      status: 'draft',
+      authors: ['Gabrielll04'],
+      entry: '/games/stardust-runner/index.html',
+    });
+    expect(findLaunchableGame(result.catalog, 'stardust-runner')).toBeUndefined();
+  });
+});
+
 describe('validação do manifesto', () => {
   it('rejeita versão desconhecida', () => {
     expect(errorsOf({ ...clone(), version: 2 }).length).toBeGreaterThan(0);
@@ -147,7 +167,7 @@ describe('loadCatalog', () => {
   it('carrega e valida o manifesto', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(manifest)));
     const catalog = await loadCatalog(fetchMock);
-    expect(catalog.games).toHaveLength(1);
+    expect(catalog.games).toHaveLength(manifest.games.length);
   });
 
   it('gera CatalogError com detalhes para manifesto inválido, JSON quebrado ou HTTP de erro', async () => {

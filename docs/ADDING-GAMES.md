@@ -55,6 +55,16 @@ arquivos estáticos em `public/` e registrar o jogo no manifesto.
 6. Gere o pacote e publique no Raspberry Pi
    ([`deploy/raspberry-pi/README.md`](../deploy/raspberry-pi/README.md)).
 
+## Jogos de outro repositório
+
+Quando o jogo vive em um repositório próprio (ex.: feito com Vite), não copie o
+código-fonte para cá. Crie uma pasta em `integrations/<id>/` com um script que clona
+um commit fixado, aplica as adaptações ao protocolo, roda os testes do jogo e copia
+**apenas** a build (`dist/`, com `base: './'`) para `public/games/<id>/`. Adicione
+`public/games/<id>` aos `ignores` do `eslint.config.js` (é código gerado).
+
+Exemplo completo: [`integrations/stardust-runner/`](../integrations/stardust-runner/README.md).
+
 ## Regras do manifesto
 
 O manifesto é validado em tempo de execução ([`src/features/catalog/schema.ts`](../src/features/catalog/schema.ts)).

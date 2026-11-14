@@ -67,6 +67,23 @@
       ],
       "status": "published",
       "controls": "Cada jogador usa seu botão de ação 1."
+    },
+    {
+      "id": "stardust-runner",
+      "title": "STARDUST RUNNER",
+      "description": "Corra pela galáxia trocando de pista, pulando pedras e deslizando sob lasers.",
+      "categoryId": "ti",
+      "entry": "/games/stardust-runner/index.html",
+      "cover": "/images/games/stardust-runner-capa.webp",
+      "hero": "/images/games/stardust-runner-destaque.webp",
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "mode": "solo",
+      "authors": [
+        "Gabrielll04"
+      ],
+      "status": "draft",
+      "controls": "Direcional troca de pista; cima ou A pula; baixo ou B desliza."
     }
   ]
 }

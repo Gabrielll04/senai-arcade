@@ -6,11 +6,11 @@ import { GameScreen } from './GameRuntime';
 
 const game = officialCatalog().games[0]!;
 
-function setup(timeout = 1000) {
+function setup(timeout = 1000, target = game) {
   const onExit = vi.fn();
   render(
     <InputProvider>
-      <GameScreen game={game} onExit={onExit} inputEnabled handshakeTimeoutMs={timeout} />
+      <GameScreen game={target} onExit={onExit} inputEnabled handshakeTimeoutMs={timeout} />
     </InputProvider>,
   );
   const frame = () => document.querySelector('iframe');
@@ -75,6 +75,14 @@ describe('GameRuntime', () => {
     expect(screen.getByTestId('game-score')).toHaveTextContent('J1 3 × 1 J2');
     fromGame(msg('exit', { reason: 'user-request' }));
     expect(onExit).toHaveBeenCalledTimes(1);
+  });
+
+  it('em jogo de 1 jogador, mostra só a pontuação', () => {
+    const solo = { ...game, id: 'stardust-runner', mode: 'solo' as const, minPlayers: 1, maxPlayers: 1 };
+    const { fromGame } = setup(1000, solo);
+    fromGame(msg('ready', { gameId: 'stardust-runner' }));
+    fromGame(msg('score', { gameId: 'stardust-runner', scores: [{ player: 1, value: 4321 }] }));
+    expect(screen.getByTestId('game-score')).toHaveTextContent('Pontuação: 4.321');
   });
 
   it('Escape pede saída ao jogo e encerra mesmo sem resposta', () => {
