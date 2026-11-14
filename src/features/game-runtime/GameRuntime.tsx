@@ -2,7 +2,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { ControlHints } from '../../components/ControlHints/ControlHints';
 import { HINTS } from '../../components/ControlHints/hints';
-import { Icon } from '../../components/Icon/Icon';
 import { useArcadeInput, useInputServices } from '../../input/InputContext';
 import { isBackAction, isSelectAction, type ArcadeInputEvent } from '../../input/types';
 import type { Game } from '../catalog/schema';
@@ -228,15 +227,11 @@ export function GameRuntime({
 
       {status.kind === 'error' ? (
         <div className="runtime__overlay" role="alert" data-testid="game-error">
-          <span className="runtime__icon">
-            <Icon name="alert" />
-          </span>
           <h2 className="runtime__title">Não foi possível abrir {game.title}</h2>
           <p className="runtime__text">{ERROR_TEXT[status.reason]} Você pode voltar ao menu ou tentar novamente.</p>
           <div className="runtime__actions">
             <ActionButton
               label="Voltar ao menu"
-              icon="arrow-left"
               selected={errorSelection === 'back'}
               testId="game-error-back"
               onActivate={exit}
@@ -247,9 +242,7 @@ export function GameRuntime({
       ) : null}
 
       <div className="runtime__bar">
-        <span className="runtime__game-title">
-          <Icon name="play" /> {game.title}
-        </span>
+        <span className="runtime__game-title">{game.title}</span>
         {score ? (
           <span className="runtime__score" data-testid="game-score">
             Placar: <span className="runtime__score-p1">J1 {score.scores.find((s) => s.player === 1)?.value ?? 0}</span>

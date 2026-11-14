@@ -105,8 +105,15 @@ describe('validação do manifesto', () => {
     },
   );
 
+  it.each(['https://cdn.exemplo.com/destaque.webp', '/images/../destaque.webp', '/images/destaque.gif'])(
+    'rejeita hero inválido "%s"',
+    (hero) => {
+      expect(errorsOf(withGame({ hero })).length).toBeGreaterThan(0);
+    },
+  );
+
   it('aceita cover ausente', () => {
-    expect(parseCatalog(withGame({ cover: undefined })).ok).toBe(true);
+    expect(parseCatalog(withGame({ cover: undefined, hero: undefined })).ok).toBe(true);
   });
 });
 

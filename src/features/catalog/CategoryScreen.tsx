@@ -1,17 +1,14 @@
 import { useMemo } from 'react';
-import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { ArcadeShell } from '../../components/ArcadeShell/ArcadeShell';
+import { Artwork } from '../../components/Artwork/Artwork';
 import { HINTS } from '../../components/ControlHints/hints';
-import { GameDetails } from '../../components/GameDetails/GameDetails';
-import { GameListItem } from '../../components/GameListItem/GameListItem';
-import { Icon } from '../../components/Icon/Icon';
+import { Tile } from '../../components/Tile/Tile';
 import { useGridNavigation } from '../navigation/useGridNavigation';
-import { gameCountLabel, publishedGamesIn } from './catalog';
-import { categoryTheme, themeStyle } from './categoryTheme';
-import type { Catalog, Category } from './schema';
+import { gameCountLabel, modeLabel, playersLabel, publishedGamesIn } from './catalog';
+import { categoryTone } from './categoryTheme';
+import type { Catalog, Category, Game } from './schema';
 import './screens.css';
 
-export const BACK_ID = 'action:back';
 const GAME_PREFIX = 'game:';
 const gameKey = (id: string) => `${GAME_PREFIX}${id}`;
 
@@ -25,7 +22,28 @@ interface CategoryScreenProps {
   inputEnabled: boolean;
 }
 
-/** Tela da área: destaque do jogo selecionado à esquerda e lista de jogos à direita. */
+function GameFeature({ game, tone }: { game: Game; tone: string }) {
+  return (
+    <div className="area__feature" key={game.id} data-testid="game-details">
+      <div className="area__hero">
+        <Artwork src={game.hero ?? game.cover} alt={game.title} shape="wide" tone={tone} name={game.title} />
+      </div>
+      <div className="area__info">
+        <h2 className="area__title">{game.title}</h2>
+        <p className="area__meta">
+          {playersLabel(game)} · {modeLabel(game.mode)}
+        </p>
+        <p className="area__description">{game.description}</p>
+        {game.controls ? <p className="area__detail">{game.controls}</p> : null}
+        {game.authors && game.authors.length > 0 ? (
+          <p className="area__detail">Por {game.authors.join(', ')}</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/** Tela da área: destaque do jogo selecionado e fileira de jogos abaixo. */
 export function CategoryScreen({
   catalog,
   category,
@@ -36,78 +54,67 @@ export function CategoryScreen({
   inputEnabled,
 }: CategoryScreenProps) {
   const games = useMemo(() => publishedGamesIn(catalog, category.id), [catalog, category.id]);
-  // Lista vertical: um jogo por linha e, por último, "Voltar".
-  const layout = useMemo(() => [...games.map((g) => [gameKey(g.id)]), [BACK_ID]], [games]);
-  const current = selectedId && layout.some((row) => row.includes(selectedId)) ? selectedId : (layout[0]?.[0] ?? '');
-  const featured = games.find((g) => gameKey(g.id) === current) ?? games[0];
+  const layout = useMemo(() => [games.map((g) => gameKey(g.id))], [games]);
+  const current = selectedId && layout[0]?.includes(selectedId) ? selectedId : (layout[0]?.[0] ?? '');
+  const featured = games.find((g) => gameKey(g.id) === current);
+  const tone = categoryTone(category);
 
-  const activate = (id: string) => {
-    if (id === BACK_ID) onBack();
-    else onOpenGame(id.slice(GAME_PREFIX.length));
-  };
+  useGridNavigation({
+    layout,
+    selectedId: current,
+    onSelect,
+    onActivate: (id) => {
+      if (id.startsWith(GAME_PREFIX)) onOpenGame(id.slice(GAME_PREFIX.length));
+    },
+    onBack,
+    enabled: inputEnabled,
+  });
 
-  useGridNavigation({ layout, selectedId: current, onSelect, onActivate: activate, onBack, enabled: inputEnabled });
-
-  const hints =
-    games.length > 0 ? [HINTS.move(), HINTS.select('Jogar'), HINTS.back(), HINTS.help()] : [HINTS.back(), HINTS.help()];
-  const theme = categoryTheme(category);
+  const hints = games.length > 0 ? [HINTS.select('Jogar'), HINTS.back(onBack), HINTS.help()] : [HINTS.back(onBack), HINTS.help()];
 
   return (
-    <ArcadeShell
-      subtitle={category.title}
-      hints={hints}
-      themeStyle={themeStyle(theme)}
-      backdropArt={featured?.cover}
-      watermark={featured ? undefined : category.icon}
-    >
-      <div className="browse">
-        <section className="browse__main">
-          {featured ? (
-            <GameDetails game={featured} />
-          ) : (
-            <div className="empty-state" data-testid="empty-category">
-              <span className="empty-state__icon">
-                <Icon name={category.icon} />
-              </span>
-              <span className="empty-state__badge">Em breve</span>
-              <p className="empty-state__title">{category.title}</p>
-              <p className="empty-state__text">
+    <ArcadeShell section={category.title} hints={hints}>
+      <div className="area">
+        {featured ? (
+          <GameFeature game={featured} tone={tone} />
+        ) : (
+          <div className="area__feature" data-testid="empty-category">
+            <div className="area__hero">
+              <Artwork alt={category.title} shape="wide" tone={tone} name={category.title} />
+            </div>
+            <div className="area__info">
+              <h2 className="area__title">{category.title}</h2>
+              <span className="area__status">Em breve</span>
+              <p className="area__description">{category.description}</p>
+              <p className="area__detail">
                 Ainda não há jogos publicados nesta área. Novos jogos serão adicionados pela equipe do Senai Lab.
               </p>
             </div>
-          )}
-        </section>
+          </div>
+        )}
 
-        <aside className="browse__side">
-          <h2 className="browse__heading">
-            <Icon name={category.icon} /> {category.title}
-            <span className="browse__count">{gameCountLabel(games.length)}</span>
-          </h2>
-          <ul className="browse__list" aria-label={`Jogos de ${category.title}`}>
+        {games.length > 0 ? (
+          <ul className="shelf" aria-label={`Jogos de ${category.title} (${gameCountLabel(games.length)})`}>
             {games.map((game) => (
               <li key={game.id}>
-                <GameListItem
-                  game={game}
+                <Tile
+                  label={game.title}
+                  ariaLabel={`${game.title}: ${playersLabel(game)}, ${modeLabel(game.mode)}`}
                   selected={current === gameKey(game.id)}
+                  testId={`game-${game.id}`}
                   onActivate={() => {
                     onSelect(gameKey(game.id));
                     onOpenGame(game.id);
                   }}
-                />
+                >
+                  <Artwork src={game.cover} alt={game.title} shape="square" tone={tone} name={game.title} />
+                </Tile>
               </li>
             ))}
-            {games.length === 0 ? <li className="browse__empty-list">Nenhum jogo disponível ainda.</li> : null}
           </ul>
-          <div>
-            <ActionButton
-              label="Voltar às categorias"
-              icon="arrow-left"
-              selected={current === BACK_ID}
-              testId="back-to-categories"
-              onActivate={onBack}
-            />
-          </div>
-        </aside>
+        ) : (
+          <p className="area__empty-shelf">Nenhum jogo publicado ainda.</p>
+        )}
       </div>
     </ArcadeShell>
   );

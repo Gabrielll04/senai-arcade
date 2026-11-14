@@ -1,7 +1,6 @@
 import { ACTION_LABELS, gamepadButtonsFor, keysFor } from '../../input/inputMap';
 import { useArcadeInput } from '../../input/InputContext';
 import { isBackAction, type ArcadeAction } from '../../input/types';
-import { Icon } from '../Icon/Icon';
 import './HelpOverlay.css';
 
 interface Row {
@@ -52,7 +51,7 @@ export function HelpOverlay({ onClose }: HelpOverlayProps) {
     <div className="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title" data-testid="help-overlay">
       <div className="help-overlay__panel">
         <h2 id="help-title" className="help-overlay__title">
-          <Icon name="help" /> Como jogar
+          Como jogar
         </h2>
         <table className="help-overlay__table">
           <thead>

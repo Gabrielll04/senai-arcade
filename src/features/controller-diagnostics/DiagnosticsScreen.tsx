@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArcadeShell } from '../../components/ArcadeShell/ArcadeShell';
 import type { Hint } from '../../components/ControlHints/hints';
-import { Icon } from '../../components/Icon/Icon';
 import type { GamepadSnapshot } from '../../input/gamepadAdapter';
 import { ACTION_LABELS, DEFAULT_GAMEPAD_MAPPING, keyLabel, keysFor } from '../../input/inputMap';
 import { useArcadeInput, useInputServices } from '../../input/InputContext';
@@ -89,18 +88,18 @@ export function DiagnosticsScreen({ onBack, inputEnabled }: DiagnosticsScreenPro
   }, inputEnabled);
 
   const hints: Hint[] = [
-    { id: 'exit', glyph: { label: 'SELECT', variant: 'neutral' }, keys: keysFor(1, 'back'), label: 'Sair' },
-    { id: 'hold', glyph: { label: 'B', variant: 'b' }, keys: keysFor(1, 'action2'), label: 'Segure 1,5 s para sair' },
+    { id: 'exit', label: 'Sair', keys: [...keysFor(1, 'back'), 'Select'], onActivate: onBack },
+    { id: 'hold', glyph: 'B', label: 'Segure 1,5 s para sair', keys: keysFor(1, 'action2') },
   ];
 
   const mappedButtons = new Set(Object.keys(DEFAULT_GAMEPAD_MAPPING.buttons).map(Number));
 
   return (
-    <ArcadeShell subtitle="Diagnóstico de controles" hints={hints}>
+    <ArcadeShell section="Testar controles" hints={hints}>
       <div className="diagnostics" data-testid="diagnostics">
         <section className="diagnostics__panel" aria-labelledby="diag-keyboard">
           <h2 id="diag-keyboard">
-            <Icon name="keyboard" /> Teclado / encoder USB
+            Teclado e encoder USB
           </h2>
           <p className="diagnostics__instructions">
             Pressione cada direção e cada botão dos dois lados do fliperama. Cada entrada reconhecida aparece abaixo
@@ -126,7 +125,7 @@ export function DiagnosticsScreen({ onBack, inputEnabled }: DiagnosticsScreenPro
 
         <section className="diagnostics__panel" aria-labelledby="diag-gamepads">
           <h2 id="diag-gamepads">
-            <Icon name="gamepad" /> Gamepads (Gamepad API)
+            Gamepads
           </h2>
           <div className="diagnostics__pads" data-testid="diag-gamepads">
             {pads.length === 0 ? (

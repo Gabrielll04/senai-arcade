@@ -55,8 +55,8 @@ docs/                            esta documentação
 | **Rotas internas por estado** (sem React Router) | O quiosque não tem barra de endereço nem histórico; um `useState<Route>` é mais simples e evita uma dependência. |
 | **Vite `appType: 'mpa'`** | Sem fallback de SPA: um jogo ausente responde 404 em dev/preview, igual ao Nginx. |
 | **CSS por componente + variáveis CSS** | Sem biblioteca visual. Tamanho base em `rem` derivado de `min(1.25vw, 2.2vh)`, então tudo escala entre 720p e 1080p sem rolagem. |
-| **Visual "console-first"** | Tela inicial com destaque (hero) da área selecionada e carrossel horizontal; tela da área com capa grande e lista de jogos; fundo que muda de cor por área (`categoryTheme.ts`); relógio e glyphs de botões. Identidade própria, sem logos ou artes de outros produtos. |
-| **Fonte Outfit empacotada** (`@fontsource-variable/outfit`, OFL) | Fica dentro do build (`dist/assets`), sem CDN. Sem `backdrop-filter` e com animações curtas só em `transform`/`opacity`, pensando no Raspberry Pi. |
+| **Visual inspirado em menus de console (ex.: Switch)** | Fundo neutro, sem gradientes, brilhos nem ícones decorativos. A arte dos jogos é o centro: fileira de tiles quadrados (capa 1:1), título acima do item selecionado, contorno de seleção na cor de destaque e dicas Ⓐ/Ⓑ no rodapé. A tela da área mostra a imagem de destaque 16:9. Sem imagem, o espaço fica reservado com um tom sólido e o nome. |
+| **Fonte Outfit empacotada** (`@fontsource-variable/outfit`, OFL) | Fica dentro do build (`dist/assets`), sem CDN. Animações curtas só em `transform`/`opacity`, pensando no Raspberry Pi. |
 | **Zod** para manifesto e mensagens | Validação em runtime com mensagens claras; tipos TypeScript derivados do schema. |
 | **Camada de entrada fora do React** | `InputManager` e adaptadores são classes puras, testáveis com fontes simuladas. O React só recebe eventos em transições — nunca a cada frame. |
 | **`KeyboardEvent.code`** | Mapeia posição física: independe de layout, Shift e NumLock. Ver `docs/CONTROLS.md`. |

@@ -17,8 +17,13 @@ arquivos estáticos em `public/` e registrar o jogo no manifesto.
    - Nada de CDN, fontes externas, analytics ou chamadas de rede.
    - Para jogos feitos com Vite/React, gere o build com `base: './'` e copie o
      conteúdo de `dist/` para a pasta.
-2. (Opcional) Adicione uma capa 16:9 em `public/images/games/<id-do-jogo>.webp`
-   (recomendado 640×360, WebP/AVIF/PNG/SVG). Sem capa, o launcher mostra um fallback.
+2. Adicione as imagens do jogo em `public/images/games/` (WebP recomendado):
+   - **capa** quadrada (1:1), recomendado **512×512** — usada nos tiles das fileiras;
+   - **destaque** 16:9, recomendado **1280×720** — usada no topo da tela da área.
+   Uma captura de tela real do jogo funciona muito bem nos dois casos. Sem imagem, o
+   launcher reserva o espaço com um tom sólido e o nome do jogo. A capa do primeiro jogo
+   publicado de uma área também vira a imagem do tile da área na tela inicial (a menos
+   que a área tenha `cover` própria).
 3. Registre o jogo em `public/catalog/games.json`:
 
    ```json
@@ -28,7 +33,8 @@ arquivos estáticos em `public/` e registrar o jogo no manifesto.
      "description": "Responda perguntas sobre redes de computadores.",
      "categoryId": "ti",
      "entry": "/games/quiz-de-redes/index.html",
-     "cover": "/images/games/quiz-de-redes.webp",
+     "cover": "/images/games/quiz-de-redes-capa.webp",
+     "hero": "/images/games/quiz-de-redes-destaque.webp",
      "minPlayers": 1,
      "maxPlayers": 2,
      "mode": "competitive",
@@ -61,7 +67,8 @@ desenvolvimento lista cada erro.
 | `id` | Único; minúsculas, números e hífens (`quiz-de-redes`). |
 | `categoryId` | Deve existir em `categories`. |
 | `entry` | Caminho local iniciado em `/`, terminando em `.html`, sem `..`, protocolo, host ou query. |
-| `cover` | Opcional; caminho local de imagem (`.webp`, `.avif`, `.png`, `.jpg`, `.svg`). |
+| `cover` | Opcional; capa quadrada 1:1 (`.webp`, `.avif`, `.png`, `.jpg`, `.svg`). |
+| `hero` | Opcional; imagem de destaque 16:9. Sem ela, a capa é usada no destaque. |
 | `minPlayers` / `maxPlayers` | Inteiros de 1 a 2, com `minPlayers ≤ maxPlayers`. |
 | `mode` | `solo`, `cooperative` ou `competitive`. |
 | `status` | `published` (aparece e pode ser iniciado) ou `draft` (oculto). |
@@ -69,7 +76,8 @@ desenvolvimento lista cada erro.
 | `controls` | Opcional; texto curto com os controles. |
 
 Categorias usam `id`, `title`, `description`, `icon` (um de `code`, `settings`, `zap`,
-`package`, `clipboard-list`, `scissors`, `trophy`, `graduation-cap`) e `cover` opcional.
+`package`, `clipboard-list`, `scissors`, `trophy`, `graduation-cap` — define o tom de cor
+do espaço reservado da área) e `cover` opcional (quadrada, 512×512).
 A contagem de jogos de cada categoria é calculada a partir dos jogos publicados.
 
 ## Protocolo `senai-arcade` versão 1

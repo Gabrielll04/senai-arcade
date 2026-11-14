@@ -11,7 +11,8 @@ describe('App — navegação por teclado', () => {
     const ti = await screen.findByTestId('category-ti');
     expect(within(ti).getByTestId('category-count')).toHaveTextContent('1 jogo');
     expect(within(screen.getByTestId('category-mecanica')).getByTestId('category-count')).toHaveTextContent('Em breve');
-    expect(screen.getAllByText('Em breve')).toHaveLength(7);
+    const soon = screen.getAllByTestId('category-count').filter((el) => el.textContent === 'Em breve');
+    expect(soon).toHaveLength(7);
     expect(selected()).toBe(ti);
   });
 
@@ -47,16 +48,13 @@ describe('App — navegação por teclado', () => {
     await screen.findByTestId('category-ti');
     act(() => tap('Enter'));
     const card = await screen.findByTestId('game-duelo-de-reflexos');
-    expect(card).toHaveTextContent('2 jogadores');
-    expect(card).toHaveTextContent('Competitivo');
+    expect(card).toHaveAccessibleName('Duelo de Reflexos: 2 jogadores, Competitivo');
+    expect(card.querySelector('img')).toHaveAttribute('src', '/images/games/duelo-de-reflexos-capa.webp');
     const details = screen.getByTestId('game-details');
     expect(details).toHaveTextContent('Duelo de Reflexos');
     expect(details).toHaveTextContent('SENAI Lab');
     expect(details).toHaveTextContent('Dois jogadores disputam');
-    expect(selected()).toBe(card);
-    act(() => tap('KeyS'));
-    expect(selected()).toBe(screen.getByTestId('back-to-categories'));
-    act(() => tap('KeyW'));
+    expect(details.querySelector('img')).toHaveAttribute('src', '/images/games/duelo-de-reflexos-destaque.webp');
     expect(selected()).toBe(card);
     act(() => tap('KeyK'));
     expect(await screen.findByTestId('category-ti')).toBeInTheDocument();

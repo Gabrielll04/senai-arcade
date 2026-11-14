@@ -57,11 +57,14 @@
       "description": "Dois jogadores disputam quem reage primeiro ao sinal.",
       "categoryId": "ti",
       "entry": "/games/duelo-de-reflexos/index.html",
-      "cover": "/images/games/duelo-de-reflexos.svg",
+      "cover": "/images/games/duelo-de-reflexos-capa.webp",
+      "hero": "/images/games/duelo-de-reflexos-destaque.webp",
       "minPlayers": 2,
       "maxPlayers": 2,
       "mode": "competitive",
-      "authors": ["SENAI Lab"],
+      "authors": [
+        "SENAI Lab"
+      ],
       "status": "published",
       "controls": "Cada jogador usa seu botão de ação 1."
     }

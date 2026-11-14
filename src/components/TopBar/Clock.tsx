@@ -9,9 +9,5 @@ export function Clock({ className }: { className?: string }) {
     const timer = setInterval(() => setTime(format(new Date())), 15_000);
     return () => clearInterval(timer);
   }, []);
-  return (
-    <time className={className} aria-label={`Hora atual ${time}`}>
-      {time}
-    </time>
-  );
+  return <time className={className}>{time}</time>;
 }

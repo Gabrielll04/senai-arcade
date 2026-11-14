@@ -1,28 +1,4 @@
 .status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  color: var(--color-text-muted);
   font-size: var(--text-sm);
-}
-
-.status__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0.2rem 0.7rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-text-dim);
-}
-
-.status__item svg {
-  font-size: 1.25em;
-}
-
-.status__item--active {
-  color: var(--color-text);
-}
-
-.status__item--active svg {
-  color: var(--color-green);
 }

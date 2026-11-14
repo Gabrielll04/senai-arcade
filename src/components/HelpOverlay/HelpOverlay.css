@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-5);
-  background: rgb(4 5 12 / 82%);
+  background: rgb(14 14 16 / 86%);
   animation: fade-in var(--transition-fast) both;
 }
 
@@ -14,63 +14,47 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  width: min(62rem, 100%);
+  width: min(60rem, 100%);
   max-height: 100%;
-  padding: var(--space-5) var(--space-6);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(160deg, #161c33, #0b0e1c);
-  box-shadow: 0 2rem 4rem rgb(0 0 0 / 60%);
-  animation: rise-in var(--transition-slow) both;
+  padding: var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .help-overlay__title {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--text-2xl);
-  font-weight: 800;
-}
-
-.help-overlay__title svg {
-  color: var(--glyph-start);
+  font-size: var(--text-xl);
+  font-weight: 600;
 }
 
 .help-overlay__table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--text-md);
 }
 
 .help-overlay__table th,
 .help-overlay__table td {
   padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-line);
   text-align: left;
 }
 
 .help-overlay__table tbody th {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .help-overlay__table thead th {
-  color: var(--color-text-dim);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .help-overlay__table td .keycap + .keycap {
   margin-left: var(--space-1);
 }
 
-.help-overlay__p1 {
-  color: var(--color-player1) !important;
-}
-
+.help-overlay__p1,
 .help-overlay__p2 {
-  color: var(--color-player2) !important;
+  color: var(--color-text-muted);
 }
 
 .help-overlay__note {

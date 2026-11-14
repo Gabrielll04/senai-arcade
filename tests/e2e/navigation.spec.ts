@@ -18,7 +18,7 @@ test('1. abre a aplicação e mostra as categorias', async ({ page }) => {
   for (const title of CATEGORIES) await expect(carousel.getByRole('button', { name: new RegExp(`^${title}:`) })).toBeVisible();
   await expect(page.getByTestId('home-hero')).toContainText('Tecnologia da Informação');
   await expect(page.getByTestId('category-ti').getByTestId('category-count')).toHaveText('1 jogo');
-  await expect(page.getByText('Em breve', { exact: true })).toHaveCount(7);
+  await expect(page.getByTestId('category-count').filter({ hasText: /^Em breve$/ })).toHaveCount(7);
   // Sem rolagem vertical em 720p.
   const overflow = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
   expect(overflow).toBeLessThanOrEqual(0);
@@ -60,7 +60,7 @@ test('4 e 8. abre a categoria de TI e volta às categorias', async ({ page }) =>
   await openHome(page);
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Tecnologia da Informação' })).toBeVisible();
-  await expect(page.getByTestId('game-duelo-de-reflexos')).toContainText('2 jogadores');
+  await expect(page.getByTestId('game-duelo-de-reflexos')).toHaveAccessibleName(/2 jogadores/);
   await expect(page.getByTestId('game-details')).toContainText('SENAI Lab');
   await expect(page.getByText('Voltar', { exact: true })).toBeVisible();
   await page.keyboard.press('KeyK');

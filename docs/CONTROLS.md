@@ -30,10 +30,9 @@ ações normalizadas (`up`, `down`, `left`, `right`, `confirm`, `cancel`, `start
 
 No menu, as direções dos **dois** jogadores movem a seleção:
 
-- **Tela inicial:** esquerda/direita percorrem o carrossel de áreas; baixo vai para os
-  atalhos (Diagnóstico, Ajuda); cima volta para a última área selecionada.
-- **Tela da área:** cima/baixo percorrem a lista de jogos; o último item é "Voltar às
-  categorias".
+- **Tela inicial:** esquerda/direita percorrem a fileira de áreas; baixo vai para os
+  atalhos (Testar controles, Ajuda); cima volta para a última área selecionada.
+- **Tela da área:** esquerda/direita percorrem a fileira de jogos; Ação 2 (Ⓑ) volta.
 
 ### Por que `event.code`?
 
@@ -63,7 +62,7 @@ envie a tecla da tabela acima.
 
 ### Como identificar o tipo do dispositivo
 
-1. Abra o SENAI Arcade e selecione **Diagnóstico de controles** na tela inicial.
+1. Abra o SENAI Arcade e selecione **Testar controles** na tela inicial.
 2. Mexa o joystick e aperte os botões.
    - Aparece no painel **Teclado / encoder USB** → o encoder emula teclado.
    - Aparece no painel **Gamepads** → o encoder é um gamepad (Gamepad API).

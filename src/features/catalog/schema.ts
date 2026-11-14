@@ -58,7 +58,10 @@ export const gameSchema = z
     description: z.string().trim().min(1).max(200),
     categoryId: id,
     entry: entryPath,
+    /** Capa quadrada (1:1), usada nos tiles. Recomendado 512×512. */
     cover: imagePath.optional(),
+    /** Imagem de destaque (16:9), usada na tela da área. Recomendado 1280×720. */
+    hero: imagePath.optional(),
     minPlayers: playerCount,
     maxPlayers: playerCount,
     mode: z.enum(GAME_MODES),

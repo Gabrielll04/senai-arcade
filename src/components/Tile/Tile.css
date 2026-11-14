@@ -1,0 +1,42 @@
+.tile {
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--tile-size, 13.5rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-tile);
+  background: none;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.tile .artwork {
+  border-radius: var(--radius-tile);
+  font-size: 1.15rem;
+}
+
+/* Título acima do item selecionado, como nos menus de console. */
+.tile__label {
+  position: absolute;
+  bottom: calc(100% + 0.7rem);
+  left: 0;
+  width: max-content;
+  max-width: 28rem;
+  color: var(--color-accent);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+
+.tile[data-selected='true'] {
+  box-shadow: var(--selection-ring);
+  transform: scale(1.03);
+}
+
+.tile[data-selected='true'] .tile__label {
+  opacity: 1;
+}

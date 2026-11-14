@@ -1,19 +1,24 @@
 import { useMemo, useState } from 'react';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { ArcadeShell } from '../../components/ArcadeShell/ArcadeShell';
-import { CategoryTile } from '../../components/CategoryTile/CategoryTile';
+import { Artwork } from '../../components/Artwork/Artwork';
 import { HINTS } from '../../components/ControlHints/hints';
-import { keysFor } from '../../input/inputMap';
+import { Tile } from '../../components/Tile/Tile';
 import { useGridNavigation } from '../navigation/useGridNavigation';
 import { gameCountLabel, publishedGamesIn } from './catalog';
-import { categoryTheme, themeStyle } from './categoryTheme';
-import type { Catalog } from './schema';
+import { categoryTone } from './categoryTheme';
+import type { Catalog, Category } from './schema';
 import './screens.css';
 
 export const DIAGNOSTICS_ID = 'action:diagnostics';
 export const HELP_ID = 'action:help';
 const CATEGORY_PREFIX = 'category:';
 const categoryKey = (id: string) => `${CATEGORY_PREFIX}${id}`;
+
+/** Arte do tile da área: capa própria ou, se não houver, a capa do primeiro jogo publicado. */
+function categoryArt(catalog: Catalog, category: Category): string | undefined {
+  return category.cover ?? publishedGamesIn(catalog, category.id).find((game) => game.cover)?.cover;
+}
 
 interface HomeScreenProps {
   catalog: Catalog;
@@ -25,10 +30,7 @@ interface HomeScreenProps {
   inputEnabled: boolean;
 }
 
-/**
- * Tela inicial em estilo console: destaque da área selecionada no alto,
- * carrossel horizontal de áreas e, abaixo, atalhos de sistema.
- */
+/** Tela inicial: fileira de áreas com arte grande e atalhos de sistema abaixo. */
 export function HomeScreen({
   catalog,
   selectedId,
@@ -42,7 +44,7 @@ export function HomeScreen({
   const layout = useMemo(() => [categoryIds, [DIAGNOSTICS_ID, HELP_ID]], [categoryIds]);
   const current = selectedId && layout.some((row) => row.includes(selectedId)) ? selectedId : (categoryIds[0] ?? '');
 
-  // Última área selecionada: continua em destaque nos atalhos e é o destino ao subir deles.
+  // Última área selecionada: continua descrita nos atalhos e é o destino ao subir deles.
   const [lastCategory, setLastCategory] = useState(() =>
     current.startsWith(CATEGORY_PREFIX) ? current : (categoryIds[0] ?? ''),
   );
@@ -50,10 +52,6 @@ export function HomeScreen({
     if (id.startsWith(CATEGORY_PREFIX)) setLastCategory(id);
     onSelect(id);
   };
-
-  const featured = catalog.categories.find((c) => categoryKey(c.id) === lastCategory) ?? catalog.categories[0];
-  const featuredIndex = featured ? catalog.categories.indexOf(featured) : 0;
-  const featuredCount = featured ? publishedGamesIn(catalog, featured.id).length : 0;
 
   const activate = (id: string) => {
     if (id === DIAGNOSTICS_ID) onOpenDiagnostics();
@@ -71,59 +69,56 @@ export function HomeScreen({
       direction === 'up' && !from.startsWith(CATEGORY_PREFIX) ? lastCategory : next,
   });
 
-  const theme = featured ? themeStyle(categoryTheme(featured)) : undefined;
-  const openKeys = [...keysFor(1, 'action1'), ...keysFor(1, 'confirm').slice(0, 1)].join(' / ');
+  const featured = catalog.categories.find((c) => categoryKey(c.id) === lastCategory) ?? catalog.categories[0];
+  const featuredCount = featured ? publishedGamesIn(catalog, featured.id).length : 0;
 
   return (
-    <ArcadeShell
-      subtitle="Início"
-      hints={[HINTS.move(), HINTS.select(), HINTS.help()]}
-      themeStyle={theme}
-      watermark={featured?.icon}
-    >
+    <ArcadeShell hints={[HINTS.select(), HINTS.help(onOpenHelp)]}>
       <div className="home">
-        {featured ? (
-          <section className="home__hero" key={featured.id} aria-live="polite" data-testid="home-hero">
-            <p className="home__kicker">
-              Área {String(featuredIndex + 1).padStart(2, '0')} / {String(catalog.categories.length).padStart(2, '0')}
-            </p>
-            <h2 className="home__title">{featured.title}</h2>
-            <p className="home__description">{featured.description}</p>
-            <div className="home__meta">
-              <span className={`home__count${featuredCount === 0 ? ' home__count--soon' : ''}`}>
-                {featuredCount === 0 ? 'Em breve' : `${gameCountLabel(featuredCount)} disponível${featuredCount > 1 ? 'is' : ''}`}
-              </span>
-              <span className="home__cta">
-                <span className="glyph glyph--a">A</span> {featuredCount === 0 ? 'Ver detalhes' : 'Abrir'}
-                <span className="hints__keys">{openKeys}</span>
-              </span>
-            </div>
-          </section>
-        ) : null}
-
-        <ul className="carousel" aria-label="Categorias" data-testid="category-carousel">
+        <ul className="shelf" aria-label="Áreas" data-testid="category-carousel">
           {catalog.categories.map((category) => {
             const id = categoryKey(category.id);
+            const count = publishedGamesIn(catalog, category.id).length;
             return (
               <li key={category.id}>
-                <CategoryTile
-                  category={category}
-                  gameCount={publishedGamesIn(catalog, category.id).length}
+                <Tile
+                  label={category.title}
+                  ariaLabel={`${category.title}: ${gameCountLabel(count)}`}
                   selected={current === id}
+                  testId={`category-${category.id}`}
                   onActivate={() => {
                     select(id);
                     activate(id);
                   }}
-                />
+                >
+                  <Artwork
+                    src={categoryArt(catalog, category)}
+                    alt={category.title}
+                    shape="square"
+                    tone={categoryTone(category)}
+                    name={category.title}
+                    note={gameCountLabel(count)}
+                  />
+                  <span className="visually-hidden" data-testid="category-count">
+                    {gameCountLabel(count)}
+                  </span>
+                </Tile>
               </li>
             );
           })}
         </ul>
 
+        {featured ? (
+          <section className="home__info" aria-live="polite" data-testid="home-hero">
+            <h2 className="visually-hidden">{featured.title}</h2>
+            <p>{featured.description}</p>
+            <span className="home__count">{gameCountLabel(featuredCount)}</span>
+          </section>
+        ) : null}
+
         <div className="home__system">
           <ActionButton
-            label="Diagnóstico de controles"
-            icon="gamepad"
+            label="Testar controles"
             selected={current === DIAGNOSTICS_ID}
             testId="open-diagnostics"
             onActivate={() => {
@@ -133,7 +128,6 @@ export function HomeScreen({
           />
           <ActionButton
             label="Ajuda"
-            icon="help"
             selected={current === HELP_ID}
             testId="open-help"
             onActivate={() => {
